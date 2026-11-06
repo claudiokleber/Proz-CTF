@@ -6,11 +6,18 @@ import { platformDb } from "./db-platform";
 const SESSION_COOKIE_NAME = "proz_ctf_platform_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12; // 12 horas
 
+// DECISÃO DE SEGURANÇA: Nenhum valor padrão (fallback) é permitido para `PLATFORM_SESSION_SECRET`.
+// Como o código-fonte esteve público, qualquer fallback fixo permitiria forjar cookies de sessão
+// da Plataforma CTF (incluindo sessão de instrutor/admin). Se a variável não estiver definida,
+// a autenticação falha explicitamente.
 function getPlatformSecret(): string {
-  return (
-    process.env.PLATFORM_SESSION_SECRET ||
-    "proz-ctf-dev-platform-secret-key-change-in-prod-9f8e7d6c5b4a"
-  );
+  const secret = process.env.PLATFORM_SESSION_SECRET?.trim();
+  if (!secret) {
+    throw new Error(
+      "PLATFORM_SESSION_SECRET não definido no ambiente (.env). Gere um com `./gerar-env.sh` ou `openssl rand -hex 32`."
+    );
+  }
+  return secret;
 }
 
 export async function hashPlatformPassword(plain: string): Promise<string> {

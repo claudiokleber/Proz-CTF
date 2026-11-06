@@ -9,12 +9,15 @@
 # DECISÕES TÉCNICAS E DE SEGURANÇA:
 # 1. `set -euo pipefail`: Aborta imediatamente em qualquer erro de comando,
 #    variável não definida ou falha em pipeline.
-# 2. Inicialização automática do `.env`: Se o instrutor ainda não tiver copiado
-#    `.env.example` para `.env`, o script cria o `.env` automaticamente.
-# 3. Rotação de `CTF_FLAG_SECRET`: Gera um novo segredo hexadecimal local (via
-#    `/dev/urandom` do kernel Linux, 100% offline) a cada reset, garantindo que
-#    uma nova turma receba 17 flags inéditas (impedindo cola de turmas anteriores)
-#    e que `platform` e `shop` derivem exatamente o mesmo conjunto de flags.
+# 2. Exigência de `.env` previamente gerado por `./gerar-env.sh`: O script NUNCA
+#    copia `.env.example` automaticamente, pois `.env.example` possui segredos em
+#    branco por segurança. Se `.env` não existir, o script aborta e instrui o
+#    usuário a executar `./gerar-env.sh`.
+# 3. Rotação de `CTF_FLAG_SECRET` (com suporte a `KEEP_FLAGS=true`): A cada reset
+#    padrão, gera um novo segredo aleatório de 32 bytes (256 bits), atualiza apenas
+#    a linha `CTF_FLAG_SECRET=` no `.env` preservando as demais configurações e a
+#    permissão restrita `chmod 600`, garantindo 17 flags inéditas para a nova turma.
+#    Se `KEEP_FLAGS=true`, preserva o `CTF_FLAG_SECRET` atual do `.env`.
 # 4. `docker compose down -v --remove-orphans`: Derruba os 4 serviços, remove as
 #    redes e destrói os volumes `proz-ctf-platform-db-data` e `proz-ctf-shop-db-data`.
 # 5. Subida offline (`docker compose up -d`): Reutiliza as imagens já presentes no
@@ -35,22 +38,37 @@ echo "==========================================================================
 echo "🔄 [Proz CTF] Iniciando reset completo do ambiente Docker..."
 echo "============================================================================"
 
-# 1. Garante que o arquivo .env exista a partir do .env.example
+# 1. DECISÃO DE SEGURANÇA: Exige que o `.env` já tenha sido criado via `./gerar-env.sh`.
+#    Não copiamos `.env.example` porque ele tem segredos vazios para impedir uso de padrões públicos.
 if [ ! -f ".env" ]; then
-  echo "📄 Arquivo .env não encontrado. Criando a partir de .env.example..."
-  cp .env.example .env
+  echo "❌ Erro: Arquivo '.env' não encontrado." >&2
+  echo "   Execute './gerar-env.sh' antes de rodar o './reset.sh' para gerar segredos exclusivos." >&2
+  exit 1
 fi
 
-# 2. Rotaciona o CTF_FLAG_SECRET localmente (100% offline via /dev/urandom)
-#    para que a nova subida gere 17 flags novas e sincronizadas entre platform e shop.
+# 2. Rotaciona o CTF_FLAG_SECRET localmente para que a nova subida gere 17 flags
+#    novas e sincronizadas entre `platform` e `shop` (exceto quando KEEP_FLAGS=true).
+#    DECISÃO: Usa `umask 077` e `chmod 600 .env` após o `sed -i` (pois o `sed -i` cria
+#    um arquivo temporário que poderia perder a permissão 600 sem umask/chmod explícitos).
+umask 077
 if [ "${KEEP_FLAGS:-false}" != "true" ]; then
-  NEW_SECRET="proz-ctf-$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
-  if grep -q "^CTF_FLAG_SECRET=" .env; then
-    sed -i "s|^CTF_FLAG_SECRET=.*|CTF_FLAG_SECRET=\"${NEW_SECRET}\"|" .env
+  if command -v openssl >/dev/null 2>&1; then
+    NEW_SECRET="$(openssl rand -hex 32)"
   else
-    echo "CTF_FLAG_SECRET=\"${NEW_SECRET}\"" >> .env
+    NEW_SECRET="$(od -An -N32 -tx1 /dev/urandom | tr -d ' \n')"
   fi
-  echo "🔑 Novo segredo de derivação de flags gerado para esta turma."
+
+  if grep -q "^CTF_FLAG_SECRET=" .env; then
+    sed -i "s|^CTF_FLAG_SECRET=.*|CTF_FLAG_SECRET=${NEW_SECRET}|" .env
+  else
+    echo "CTF_FLAG_SECRET=${NEW_SECRET}" >> .env
+  fi
+  chmod 600 .env
+  export CTF_FLAG_SECRET="${NEW_SECRET}"
+  echo "🔑 Novo segredo de derivação de flags (CTF_FLAG_SECRET) gravado no .env (chmod 600)."
+else
+  chmod 600 .env
+  echo "♻️  KEEP_FLAGS=true: Mantendo o CTF_FLAG_SECRET atual do .env."
 fi
 
 # 3. Derruba os containers e apaga os volumes de banco de dados (-v)

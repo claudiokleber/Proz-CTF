@@ -1,5 +1,7 @@
 # Proz CTF — Loja Vulnerável + Plataforma de Equipes
 
+> ⚠️ **AVISO DE CONFIDENCIALIDADE:** Este repositório deve permanecer PRIVADO. Contém o gabarito do CTF.
+
 Ambiente educacional de segurança digital desenvolvido para a **Escola Técnica Proz**. O sistema é dividido em dois módulos tecnicamente isolados no banco de dados:
 
 1. **Plataforma CTF (`/ctf` — banco `platform`):** Ambiente seguro onde os alunos se cadastram, criam ou entram em equipes via código de convite (`inviteCode`), consultam os 17 desafios, enviam as flags encontradas (com rate limit de 1 tentativa a cada 3s) e acompanham o placar ao vivo. Inclui Painel Admin completo para o instrutor (`/ctf/admin`).
@@ -24,11 +26,12 @@ Ambiente educacional de segurança digital desenvolvido para a **Escola Técnica
 No notebook Debian, dentro da pasta do projeto:
 
 ```bash
-# 1. Copie o arquivo de variáveis de ambiente de exemplo
-cp .env.example .env
+# 1. Garanta permissão de execução nos scripts de operação e entrypoint
+chmod +x gerar-env.sh docker-entrypoint.sh reset.sh backup.sh
 
-# 2. Garanta permissão de execução nos scripts de operação e entrypoint
-chmod +x docker-entrypoint.sh reset.sh backup.sh
+# 2. Gere o arquivo .env (com permissão 600) contendo segredos novos e aleatórios
+#    para os dois bancos PostgreSQL, sessão da Plataforma e derivação das flags:
+./gerar-env.sh
 
 # 3. Construa as imagens multi-stage (platform e shop) e suba os 4 serviços
 docker compose up -d --build
@@ -91,12 +94,13 @@ docker compose logs platform
 ## 3. Como Executar Localmente sem Docker (Desenvolvimento)
 
 ### Passo 1 — Configurar variáveis de ambiente
-O arquivo `.env` já está configurado por padrão para os dois bancos isolados:
+Crie um arquivo `.env` apontando para os dois bancos locais e gere um `PLATFORM_SESSION_SECRET` exclusivo com `openssl rand -hex 32`:
 
 ```env
 DATABASE_URL_PLATFORM="file:./platform.db"
 DATABASE_URL_SHOP="file:./shop.db"
-PLATFORM_SESSION_SECRET="proz-ctf-dev-platform-secret-key-change-in-prod-9f8e7d6c5b4a"
+# Gere um segredo aleatório único executando no terminal: openssl rand -hex 32
+PLATFORM_SESSION_SECRET="<cole_aqui_a_saida_de_openssl_rand_-hex_32>"
 
 # Opcional: chave de API compatível com OpenAI para o ProzBot.
 # Se deixado em branco, o chatbot usa automaticamente o motor simulado local.
@@ -190,38 +194,6 @@ Se você também quiser **zerar apenas o placar de equipes** na Plataforma CTF s
 
 ---
 
-## 6. Credenciais Padrão Geradas no Seed
+## 6. Gabarito e Credenciais de Teste
 
-| Ambiente | E-mail | Senha | Papel |
-|---|---|---|---|
-| **Plataforma CTF (`/ctf`)** | `instrutor@proz.com` | *(impressa no terminal e em `FLAGS_REAIS.txt`)* | `admin` (Instrutor) |
-| **Loja Alvo (`/loja`)** | `joao.lima@proz.com` | `joao2024` | `cliente` (Conta inicial do aluno) |
-| **Loja Alvo (`/loja`)** | `maria.silva@proz.com` | `maria_proz_2024` *(descoberta no D#04)* | `cliente` |
-| **Loja Alvo (`/loja`)** | `suporte@proz.com` | `proz2010` *(descoberta no D#09)* | `suporte` |
-| **Loja Alvo (`/loja`)** | `admin@proz.com` | *(aleatória; redefinida pelo aluno no D#17)* | `admin` |
-
----
-
-## 7. Mapa de Auditoria das 17 Vulnerabilidades (`⚠️ VULN #N`)
-
-Todas as vulnerabilidades contêm o comentário padronizado `// ⚠️ VULN #N` explicando a falha e a correção real:
-
-| # | Desafio | Categoria | Arquivo Principal com `⚠️ VULN #N` |
-|---|---|---|---|
-| **1** | Olhe o código-fonte | Reconhecimento | `src/app/loja/layout.tsx` e `src/components/shop/ShopF12Helper.tsx` |
-| **2** | O que o robô não deve ver | Exposição de dados | `public/robots.txt` e `src/app/backup-antigo/page.tsx` |
-| **3** | Erro demais | Configuração incorreta | `src/app/api/produtos/[id]/route.ts` e `src/app/loja/produto/[id]/page.tsx` |
-| **4** | Senha na gaveta | Exposição de dados | `src/app/export.csv/route.ts` |
-| **5** | Atendente falante | Prompt injection (Camada 1) | `src/app/api/chat/route.ts` |
-| **6** | Preço no console | Lógica de negócio | `src/app/api/checkout/route.ts` |
-| **7** | Pedido do vizinho | Controle de acesso (IDOR) | `src/app/api/pedidos/[id]/route.ts` |
-| **8** | API tagarela | Exposição de dados | `src/app/api/produtos/route.ts` |
-| **9** | Senha fácil de adivinhar | Autenticação | `src/app/loja/sobre/page.tsx` e `src/app/api/loja/suporte/route.ts` |
-| **10** | Busca refletida | XSS refletido | `src/app/loja/page.tsx` e `src/app/api/flag-xss/route.ts` |
-| **11** | Cupom secreto | Prompt injection (Camada 2) | `src/app/api/chat/route.ts` |
-| **12** | Avaliação maliciosa | XSS armazenado | `src/app/loja/produto/[id]/page.tsx` e `src/app/api/xss-log/route.ts` |
-| **13** | Cupom infinito | Lógica de negócio | `src/app/api/cupom/aplicar/route.ts` e `src/app/loja/carrinho/page.tsx` |
-| **14** | Área restrita | Controle de acesso | `src/app/loja/suporte/page.tsx` e `src/app/api/loja/usuarios/route.ts` |
-| **15** | Token de admin | Autenticação (JWT) | `src/lib/shop-auth.ts` e `src/app/api/loja/admin/route.ts` |
-| **16** | Review envenenada | Prompt injection indireta (Camada 3) | `src/app/api/chat/route.ts` |
-| **17** | A chave mestra | Cadeia de falhas | `src/app/api/recuperar-senha/route.ts` e `src/app/api/loja/admin/route.ts` |
+O gabarito e as credenciais de teste estão no [CHALLENGES.md](CHALLENGES.md) (uso exclusivo do instrutor).

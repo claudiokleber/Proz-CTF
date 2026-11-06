@@ -36,7 +36,10 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${PLATFORM_DB_USER:-proz_platform}
-      POSTGRES_PASSWORD: ${PLATFORM_DB_PASSWORD:-proz_platform_secret_2026}
+      # DECISÃO DE SEGURANÇA: Usa `:?` (fail-fast) em vez de `:-` (valor padrão).
+      # Como o repositório já esteve público, nenhum segredo padrão pode existir no código;
+      # se `PLATFORM_DB_PASSWORD` estiver ausente ou vazio no `.env`, o Compose aborta imediatamente.
+      POSTGRES_PASSWORD: ${PLATFORM_DB_PASSWORD:?defina PLATFORM_DB_PASSWORD no .env}
       POSTGRES_DB: ${PLATFORM_DB_NAME:-proz_ctf_platform}
     volumes:
       - platform-db-data:/var/lib/postgresql/data
@@ -62,7 +65,9 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${SHOP_DB_USER:-proz_shop}
-      POSTGRES_PASSWORD: ${SHOP_DB_PASSWORD:-proz_shop_secret_2026}
+      # DECISÃO DE SEGURANÇA: Exige senha explícita no `.env` via `:?`, impedindo que o banco
+      # da Loja suba com uma senha padrão conhecida publicamente.
+      POSTGRES_PASSWORD: ${SHOP_DB_PASSWORD:?defina SHOP_DB_PASSWORD no .env}
       POSTGRES_DB: ${SHOP_DB_NAME:-proz_ctf_shop}
     volumes:
       - shop-db-data:/var/lib/postgresql/data
@@ -98,10 +103,12 @@ services:
       APP_ROLE: platform
       PLATFORM_PORT: ${PLATFORM_PORT:-3000}
       SHOP_PORT: ${SHOP_PORT:-3001}
-      DATABASE_URL_PLATFORM: postgresql://${PLATFORM_DB_USER:-proz_platform}:${PLATFORM_DB_PASSWORD:-proz_platform_secret_2026}@platform-db:5432/${PLATFORM_DB_NAME:-proz_ctf_platform}?schema=public
-      PLATFORM_SESSION_SECRET: ${PLATFORM_SESSION_SECRET:-proz-ctf-super-secret-platform-key-change-in-production-2026}
+      # DECISÃO DE SEGURANÇA: Todos os segredos usam `${VAR:?defina VAR no .env}` para
+      # garantir falha imediata (fail-closed) caso o instrutor esqueça de gerar o `.env`.
+      DATABASE_URL_PLATFORM: postgresql://${PLATFORM_DB_USER:-proz_platform}:${PLATFORM_DB_PASSWORD:?defina PLATFORM_DB_PASSWORD no .env}@platform-db:5432/${PLATFORM_DB_NAME:-proz_ctf_platform}?schema=public
+      PLATFORM_SESSION_SECRET: ${PLATFORM_SESSION_SECRET:?defina PLATFORM_SESSION_SECRET no .env}
       PLATFORM_ADMIN_INITIAL_PASSWORD: ${PLATFORM_ADMIN_INITIAL_PASSWORD:-}
-      CTF_FLAG_SECRET: ${CTF_FLAG_SECRET:-proz-ctf-flag-derivation-master-secret-2026}
+      CTF_FLAG_SECRET: ${CTF_FLAG_SECRET:?defina CTF_FLAG_SECRET no .env}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
     networks:
       - platform-net
@@ -126,10 +133,11 @@ services:
       APP_ROLE: shop
       PLATFORM_PORT: ${PLATFORM_PORT:-3000}
       SHOP_PORT: ${SHOP_PORT:-3001}
-      DATABASE_URL_SHOP: postgresql://${SHOP_DB_USER:-proz_shop}:${SHOP_DB_PASSWORD:-proz_shop_secret_2026}@shop-db:5432/${SHOP_DB_NAME:-proz_ctf_shop}?schema=public
+      # DECISÃO DE SEGURANÇA: Sem fallback de senha ou de segredo de derivação de flags.
+      DATABASE_URL_SHOP: postgresql://${SHOP_DB_USER:-proz_shop}:${SHOP_DB_PASSWORD:?defina SHOP_DB_PASSWORD no .env}@shop-db:5432/${SHOP_DB_NAME:-proz_ctf_shop}?schema=public
       # Usado apenas no entrypoint para derivar as mesmas 17 flags no seed inicial;
       # o `docker-entrypoint.sh` executa `unset CTF_FLAG_SECRET` antes de subir o servidor HTTP.
-      CTF_FLAG_SECRET: ${CTF_FLAG_SECRET:-proz-ctf-flag-derivation-master-secret-2026}
+      CTF_FLAG_SECRET: ${CTF_FLAG_SECRET:?defina CTF_FLAG_SECRET no .env}
       AI_API_KEY: ${AI_API_KEY:-}
       AI_API_MODEL: ${AI_API_MODEL:-gpt-4o-mini}
     # DECISÃO DE HARDENING 1 (`read_only: true`):
