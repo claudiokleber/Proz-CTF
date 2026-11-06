@@ -1,0 +1,44 @@
+{
+  "name": "proz-ctf",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "build": "prisma generate --schema=prisma/platform.prisma && prisma generate --schema=prisma/shop.prisma && next build",
+    "start": "next start -H 0.0.0.0 -p 3000",
+    "lan": "next build && next start -H 0.0.0.0 -p 3000",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate --schema=prisma/platform.prisma && prisma generate --schema=prisma/shop.prisma",
+    "migrate:deploy:platform": "prisma migrate deploy --schema=prisma/platform.prisma",
+    "migrate:deploy:shop": "prisma migrate deploy --schema=prisma/shop.prisma",
+    "db:push": "prisma db push --schema=prisma/platform.prisma && prisma db push --schema=prisma/shop.prisma",
+    "db:push:platform": "prisma db push --schema=prisma/platform.prisma",
+    "db:push:shop": "prisma db push --schema=prisma/shop.prisma",
+    "seed": "tsx prisma/seed.ts",
+    "seed:platform": "tsx prisma/seed.ts --platform-only",
+    "seed:shop": "tsx prisma/seed.ts --shop-only",
+    "clean": "tsx prisma/seed.ts --clean"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.460.0",
+    "next": "^14.2.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.17.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.15",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

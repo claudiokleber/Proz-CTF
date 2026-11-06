@@ -1,0 +1,120 @@
+# syntax=docker/dockerfile:1
+# ============================================================================
+# PROZ CTF — Dockerfile Multi-Stage da Plataforma CTF (`platform`)
+# ============================================================================
+# DECISÕES DE ARQUITETURA E SEGURANÇA:
+# 1. Base `node:20-bookworm-slim` (Debian 12): Compatibilidade nativa com o host
+#    Debian do notebook (glibc) e binários Prisma (`debian-openssl-3.0.x`), sem o
+#    peso de ferramentas de compilação desnecessárias na imagem final.
+# 2. Multi-stage em 3 estágios (`deps` -> `builder` -> `runner`):
+#    - `deps`: Instala pacotes npm de forma determinística via `npm ci`, aproveitando
+#      o cache de camadas do Docker caso `package*.json` não mude.
+#    - `builder`: Gera os Prisma Clients, pré-compila o `seed.ts` em `seed.cjs` via
+#      esbuild (eliminando compilação TypeScript em runtime) e executa `next build`
+#      com `output: 'standalone'`.
+#    - `runner`: Contém apenas o servidor standalone do Next.js, os assets estáticos,
+#      a CLI do Prisma + migrations do banco `platform` e o cliente `platform-client`.
+#      Não inclui `shop.prisma` nem credenciais da Loja.
+# 3. Operação 100% Offline após o build: `NEXT_TELEMETRY_DISABLED=1` desativa
+#    qualquer tentativa de telemetria externa do Next.js quando o notebook estiver
+#    em sala de aula sem internet.
+# 4. Execução sem privilégios de root (`USER nextjs`, UID 1001).
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Estágio 1: Instalação determinística de dependências (deps)
+# ----------------------------------------------------------------------------
+FROM node:20-bookworm-slim AS deps
+
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# ----------------------------------------------------------------------------
+# Estágio 2: Geração dos clientes Prisma e Build Standalone (builder)
+# ----------------------------------------------------------------------------
+FROM node:20-bookworm-slim AS builder
+
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV APP_ROLE=platform
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Gera os clientes Prisma (necessários para a compilação tipada do Next.js)
+RUN npx prisma generate --schema=prisma/platform.prisma \
+  && npx prisma generate --schema=prisma/shop.prisma
+
+# Pré-empacota o script de seed em CommonJS puro para execução rápida e offline no entrypoint
+RUN node ./node_modules/esbuild/bin/esbuild prisma/seed.ts \
+  --bundle \
+  --platform=node \
+  --target=node20 \
+  --external:../src/generated/* \
+  --external:@prisma/client \
+  --outfile=prisma/seed.cjs
+
+# Compila a aplicação Next.js gerando `.next/standalone`
+RUN npm run build
+
+# ----------------------------------------------------------------------------
+# Estágio 3: Imagem final enxuta de execução (runner)
+# ----------------------------------------------------------------------------
+FROM node:20-bookworm-slim AS runner
+
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV APP_ROLE=platform
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
+
+# Cria grupo e usuário não-root para rodar o servidor com privilégio mínimo
+RUN groupadd --system --gid 1001 nodejs \
+  && useradd --system --uid 1001 --gid nodejs nextjs
+
+# Copia artefatos estáticos e o servidor standalone gerado pelo Next.js
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copia exclusivamente o schema, migrations e cliente gerados do banco `platform`
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/platform.prisma ./prisma/platform.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/platform-migrations ./prisma/migrations
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/seed.cjs ./prisma/seed.cjs
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/seed.ts ./prisma/seed.ts
+COPY --from=builder --chown=nextjs:nodejs /app/src/generated/platform-client ./src/generated/platform-client
+
+# Copia binários locais do Prisma (para `prisma migrate deploy` offline no entrypoint)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modules/bcryptjs
+
+# Prepara entrypoint garantindo quebras de linha LF (caso clonado via Windows)
+COPY --chown=nextjs:nodejs docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /app/docker-entrypoint.sh \
+  && chmod +x /app/docker-entrypoint.sh \
+  && chown -R nextjs:nodejs /app
+
+USER nextjs
+
+EXPOSE 3000
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["node", "server.js"]

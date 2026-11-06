@@ -1,0 +1,122 @@
+# syntax=docker/dockerfile:1
+# ============================================================================
+# PROZ CTF — Dockerfile Multi-Stage da Loja Vulnerável (`shop`)
+# ============================================================================
+# DECISÕES DE ARQUITETURA, ISOLAMENTO E HARDENING:
+# 1. Isolamento físico de artefatos no estágio `runner`:
+#    - O estágio final (`runner`) recebe APENAS o `shop.prisma`, as migrations do
+#      banco `shop` (`shop-migrations`) e o `shop-client`.
+#    - O schema e o cliente do banco `platform` NÃO são copiados para a imagem final
+#      da loja, impedindo que qualquer exploração na loja tenha sequer os artefatos
+#      de acesso ao banco da plataforma CTF.
+# 2. Preparado para Root Filesystem Somente-Leitura (`read_only: true`):
+#    - O script `seed.ts` já é pré-compilado em `prisma/seed.cjs` durante o estágio
+#      `builder` e as migrations de `shop` já são posicionadas em `/app/prisma/migrations`
+#      em tempo de build. Assim, o entrypoint executa `prisma migrate deploy` e o
+#      seed inicial sem precisar gravar nenhum arquivo no disco do container.
+#    - A variável `NPM_CONFIG_CACHE=/tmp/.npm` redireciona eventuais caches para o
+#      volume `tmpfs` em memória (`/tmp`).
+# 3. Usuário sem privilégios (`USER nextjs`, UID 1001), combinado no `docker-compose.yml`
+#    com `cap_drop: [ALL]` e `no-new-privileges:true`.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Estágio 1: Instalação determinística de dependências (deps)
+# ----------------------------------------------------------------------------
+FROM node:20-bookworm-slim AS deps
+
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# ----------------------------------------------------------------------------
+# Estágio 2: Geração dos clientes Prisma e Build Standalone (builder)
+# ----------------------------------------------------------------------------
+FROM node:20-bookworm-slim AS builder
+
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV APP_ROLE=shop
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Gera os clientes Prisma necessários para o build do Next.js
+RUN npx prisma generate --schema=prisma/platform.prisma \
+  && npx prisma generate --schema=prisma/shop.prisma
+
+# Pré-empacota o seed em CommonJS puro para rodar em container `read_only: true`
+RUN node ./node_modules/esbuild/bin/esbuild prisma/seed.ts \
+  --bundle \
+  --platform=node \
+  --target=node20 \
+  --external:../src/generated/* \
+  --external:@prisma/client \
+  --outfile=prisma/seed.cjs
+
+# Compila a aplicação Next.js com `output: 'standalone'`
+RUN npm run build
+
+# ----------------------------------------------------------------------------
+# Estágio 3: Imagem final enxuta e endurecida da Loja (runner)
+# ----------------------------------------------------------------------------
+FROM node:20-bookworm-slim AS runner
+
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV APP_ROLE=shop
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
+ENV NPM_CONFIG_CACHE=/tmp/.npm
+
+# Cria grupo e usuário não-root (UID/GID 1001)
+RUN groupadd --system --gid 1001 nodejs \
+  && useradd --system --uid 1001 --gid nodejs nextjs
+
+# Copia artefatos estáticos e o servidor standalone gerado pelo Next.js
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copia EXCLUSIVAMENTE o schema, migrations e cliente do banco `shop`
+# (Nenhum arquivo do banco `platform` entra nesta imagem)
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/shop.prisma ./prisma/shop.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/shop-migrations ./prisma/migrations
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/seed.cjs ./prisma/seed.cjs
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/seed.ts ./prisma/seed.ts
+COPY --from=builder --chown=nextjs:nodejs /app/src/generated/shop-client ./src/generated/shop-client
+
+# Copia binários locais do Prisma (para `prisma migrate deploy` offline no entrypoint)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modules/bcryptjs
+
+# Garante que o diretório `.next/cache` exista no caminho onde o tmpfs será montado
+COPY --chown=nextjs:nodejs docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN mkdir -p /app/.next/cache \
+  && sed -i 's/\r$//' /app/docker-entrypoint.sh \
+  && chmod +x /app/docker-entrypoint.sh \
+  && chown -R nextjs:nodejs /app
+
+USER nextjs
+
+EXPOSE 3000
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["node", "server.js"]

@@ -1,0 +1,77 @@
+// ============================================================================
+// PROZ CTF — Schema do Banco "platform" (Plataforma CTF Segura)
+// ============================================================================
+// DECISÃO DE ISOLAMENTO E CONTAINERIZAÇÃO:
+// - Banco exclusivo da Plataforma CTF (`platform-db` no Docker Compose), isolado em
+//   sua própria rede Docker interna (`platform-net`).
+// - A Loja Vulnerável (`shop`) não possui rota de rede nem credenciais para este banco.
+// - As flags NUNCA são salvas em texto puro aqui — apenas o hash SHA-256 (`flagHash`).
+// - `binaryTargets` inclui `debian-openssl-3.0.x` para garantir que o Query Engine
+//   do Prisma rode nativamente em containers `node:20-bookworm-slim` (Debian 12).
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/platform-client"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_PLATFORM")
+}
+
+model Team {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  inviteCode  String       @unique
+  createdAt   DateTime     @default(now())
+  members     User[]
+  submissions Submission[]
+}
+
+model User {
+  id          String       @id @default(cuid())
+  name        String
+  email       String       @unique
+  password    String       // hash forte (bcrypt)
+  role        String       @default("player") // player | admin
+  teamId      String?
+  team        Team?        @relation(fields: [teamId], references: [id])
+  submissions Submission[]
+}
+
+model Challenge {
+  id          String       @id @default(cuid())
+  number      Int          @unique // 1 a 17
+  title       String
+  category    String
+  type        String       // "investigativo" | "tecnico" | "tecnico_leve"
+  difficulty  String       // "facil" | "medio" | "dificil"
+  points      Int
+  description String
+  hint1       String?
+  hint2       String?
+  flagHash    String       // SHA-256 hash — nunca armazenar a flag em texto puro
+  active      Boolean      @default(true)
+  submissions Submission[]
+}
+
+model Submission {
+  id          String    @id @default(cuid())
+  teamId      String
+  userId      String
+  challengeId String
+  team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  correct     Boolean
+  createdAt   DateTime  @default(now())
+
+  @@index([teamId, challengeId])
+}
+
+model PlatformConfig {
+  id          String   @id @default("singleton")
+  eventoAtivo Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}

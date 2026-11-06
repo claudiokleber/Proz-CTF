@@ -1,0 +1,85 @@
+// ============================================================================
+// PROZ CTF — Schema do Banco "shop" (Loja Vulnerável — Alvo Isolado)
+// ============================================================================
+// DECISÃO DE ISOLAMENTO E CONTAINERIZAÇÃO:
+// - Banco exclusivo da Loja Vulnerável (`shop-db` no Docker Compose), isolado em
+//   sua própria rede Docker interna (`shop-net`).
+// - Nenhum acesso ao banco `platform` ocorre a partir da Loja. Caso um aluno explore
+//   qualquer vulnerabilidade na Loja, o escopo máximo atingido é este banco isolado.
+// - `binaryTargets` inclui `debian-openssl-3.0.x` para execução nativa em Debian Bookworm.
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/shop-client"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_SHOP")
+}
+
+model ShopUser {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String   // ⚠️ VULN relevante: ver Seção 3, Desafios 4 e 9 — não usar hash forte onde o desafio depender de senha fraca/legível
+  role      String   @default("cliente") // cliente | suporte | admin
+  createdAt DateTime @default(now())
+  orders    Order[]
+  reviews   Review[]
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  name           String
+  description    String
+  price          Decimal  @db.Decimal(10, 2)
+  image          String
+  stock          Int
+  custoInterno   Decimal  @db.Decimal(10, 2) // ⚠️ VULN #8 — campo que não deveria ir para o cliente
+  notaFornecedor String?  // ⚠️ VULN #8 — idem
+  reviews        Review[]
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  userId      String
+  user        ShopUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       String   // JSON serializado dos itens do pedido
+  total       Decimal  @db.Decimal(10, 2)
+  observacoes String?  // usado para esconder flags do Desafio 7
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      ShopUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String   // ⚠️ VULN #12 — sem sanitização na exibição
+  createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id       String @id @default(cuid())
+  code     String @unique
+  percent  Int
+  usesLeft Int    // ⚠️ VULN #13 — controle de uso que deve ter a falha
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique // ⚠️ VULN #17 — token previsível de propósito
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+}
+
+// Tabela interna da Loja para armazenar as flags geradas dinamicamente pelo seed,
+// evitando texto plano no código-fonte e mantendo isolamento do banco "platform".
+model ShopChallengeFlag {
+  challengeNumber Int    @id // 1 a 17
+  flag            String
+}

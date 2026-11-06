@@ -1,0 +1,7 @@
+# ⚠️ VULN #2 — O que o robô não deve ver (Exposição de rotas em robots.txt)
+# Usar o robots.txt para ocultar diretórios sensíveis sem protegê-los por
+# autenticação no servidor acaba servindo como um mapa para invasores.
+User-agent: *
+Allow: /loja
+Disallow: /backup-antigo
+Disallow: /loja/backup-antigo

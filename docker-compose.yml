@@ -1,0 +1,190 @@
+# ============================================================================
+# PROZ CTF — Orquestração Docker Compose (4 Serviços Isolados)
+# ============================================================================
+# Arquitetura projetada para rodar em um notebook Debian em sala de aula (LAN),
+# 100% offline (sem depender de internet durante o evento):
+#
+#   [Alunos na LAN]
+#      ├── http://IP_DO_NOTEBOOK:3000 ──> [platform] ──(platform-net)──> [platform-db]
+#      └── http://IP_DO_NOTEBOOK:3001 ──> [shop]     ──(shop-net)──────> [shop-db]
+#
+# DECISÕES DE SEGURANÇA E ISOLAMENTO:
+# 1. Segregação de Redes (`platform-net` vs `shop-net`):
+#    Cada banco PostgreSQL vive em sua própria rede bridge isolada por regras de
+#    firewall do Docker (`DOCKER-ISOLATION`). O container `shop` (vulnerável por
+#    design) não possui rota de rede para `platform-db` nem para `platform`.
+# 2. Bancos sem portas expostas ao host:
+#    Nenhum serviço `*-db` declara a seção `ports:`. As portas 5432 existem apenas
+#    dentro de cada rede interna Docker, impedindo acesso direto aos bancos a partir
+#    da rede local da sala de aula ou do próprio host.
+# 3. Hardening do container `shop`:
+#    `read_only: true`, `cap_drop: [ALL]`, `no-new-privileges:true` e limites de
+#    CPU/RAM (`cpus` / `mem_limit` / `deploy.resources.limits`) garantem que, mesmo
+#    sob exploração intensa dos 30 alunos, o container alvo não possa alterar binários,
+#    escalar privilégios ou exaurir a memória/CPU do notebook Debian do instrutor.
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # 1. Banco de Dados da Plataforma CTF Segura (`platform-db`)
+  # --------------------------------------------------------------------------
+  platform-db:
+    image: postgres:16-bookworm
+    container_name: proz-ctf-platform-db
+    # DECISÃO: Reinicia automaticamente em caso de falha ou reboot do notebook Debian,
+    # exceto quando parado explicitamente pelo instrutor (`docker compose stop/down`).
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PLATFORM_DB_USER:-proz_platform}
+      POSTGRES_PASSWORD: ${PLATFORM_DB_PASSWORD:-proz_platform_secret_2026}
+      POSTGRES_DB: ${PLATFORM_DB_NAME:-proz_ctf_platform}
+    volumes:
+      - platform-db-data:/var/lib/postgresql/data
+    networks:
+      - platform-net
+    # DECISÃO DE SEGURANÇA: Sem `ports:`! A porta 5432 NUNCA é exposta ao host Debian
+    # nem à LAN dos alunos; apenas o serviço `platform` na rede `platform-net` a acessa.
+    healthcheck:
+      # DECISÃO DE ORQUESTRAÇÃO: Verifica se o motor PostgreSQL já aceita conexões SQL
+      # antes de permitir que o container `platform` inicie e rode `prisma migrate deploy`.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # --------------------------------------------------------------------------
+  # 2. Banco de Dados da Loja Vulnerável (`shop-db`)
+  # --------------------------------------------------------------------------
+  shop-db:
+    image: postgres:16-bookworm
+    container_name: proz-ctf-shop-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SHOP_DB_USER:-proz_shop}
+      POSTGRES_PASSWORD: ${SHOP_DB_PASSWORD:-proz_shop_secret_2026}
+      POSTGRES_DB: ${SHOP_DB_NAME:-proz_ctf_shop}
+    volumes:
+      - shop-db-data:/var/lib/postgresql/data
+    networks:
+      - shop-net
+    # DECISÃO DE SEGURANÇA: Sem `ports:`! Isolado exclusivamente na rede `shop-net`.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # --------------------------------------------------------------------------
+  # 3. Plataforma CTF de Equipes e Placar (`platform`)
+  # --------------------------------------------------------------------------
+  platform:
+    build:
+      context: .
+      dockerfile: Dockerfile.platform
+    image: proz-ctf-platform:latest
+    container_name: proz-ctf-platform
+    restart: unless-stopped
+    # DECISÃO: Aguarda o `platform-db` passar no healthcheck (`service_healthy`)
+    # antes de executar o entrypoint com `prisma migrate deploy` e o seed inicial.
+    depends_on:
+      platform-db:
+        condition: service_healthy
+    ports:
+      - "${PLATFORM_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      APP_ROLE: platform
+      PLATFORM_PORT: ${PLATFORM_PORT:-3000}
+      SHOP_PORT: ${SHOP_PORT:-3001}
+      DATABASE_URL_PLATFORM: postgresql://${PLATFORM_DB_USER:-proz_platform}:${PLATFORM_DB_PASSWORD:-proz_platform_secret_2026}@platform-db:5432/${PLATFORM_DB_NAME:-proz_ctf_platform}?schema=public
+      PLATFORM_SESSION_SECRET: ${PLATFORM_SESSION_SECRET:-proz-ctf-super-secret-platform-key-change-in-production-2026}
+      PLATFORM_ADMIN_INITIAL_PASSWORD: ${PLATFORM_ADMIN_INITIAL_PASSWORD:-}
+      CTF_FLAG_SECRET: ${CTF_FLAG_SECRET:-proz-ctf-flag-derivation-master-secret-2026}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    networks:
+      - platform-net
+
+  # --------------------------------------------------------------------------
+  # 4. Loja E-commerce Vulnerável — Alvo de Testes (`shop`)
+  # --------------------------------------------------------------------------
+  shop:
+    build:
+      context: .
+      dockerfile: Dockerfile.shop
+    image: proz-ctf-shop:latest
+    container_name: proz-ctf-shop
+    restart: unless-stopped
+    depends_on:
+      shop-db:
+        condition: service_healthy
+    ports:
+      - "${SHOP_PORT:-3001}:3000"
+    environment:
+      NODE_ENV: production
+      APP_ROLE: shop
+      PLATFORM_PORT: ${PLATFORM_PORT:-3000}
+      SHOP_PORT: ${SHOP_PORT:-3001}
+      DATABASE_URL_SHOP: postgresql://${SHOP_DB_USER:-proz_shop}:${SHOP_DB_PASSWORD:-proz_shop_secret_2026}@shop-db:5432/${SHOP_DB_NAME:-proz_ctf_shop}?schema=public
+      # Usado apenas no entrypoint para derivar as mesmas 17 flags no seed inicial;
+      # o `docker-entrypoint.sh` executa `unset CTF_FLAG_SECRET` antes de subir o servidor HTTP.
+      CTF_FLAG_SECRET: ${CTF_FLAG_SECRET:-proz-ctf-flag-derivation-master-secret-2026}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_API_MODEL: ${AI_API_MODEL:-gpt-4o-mini}
+    # DECISÃO DE HARDENING 1 (`read_only: true`):
+    # Monta o root filesystem do container da Loja como somente-leitura, impedindo
+    # que qualquer payload altere código-fonte, instale backdoors ou modifique arquivos.
+    # Diretórios temporários estritamente necessários em runtime usam `tmpfs` em RAM
+    # com flags `noexec,nosuid,nodev`.
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+      - /app/.next/cache:size=64m,uid=1001,gid=1001,noexec,nosuid,nodev
+    # DECISÃO DE HARDENING 2 (`cap_drop: [ALL]`):
+    # Remove todas as capabilities do kernel Linux (como NET_RAW, SYS_ADMIN, CHOWN,
+    # SETUID), já que o Node.js escuta na porta alta 3000 como usuário não-root (1001).
+    cap_drop:
+      - ALL
+    # DECISÃO DE HARDENING 3 (`no-new-privileges:true`):
+    # Bloqueia no kernel a aquisição de novos privilégios via binários SUID/SGID.
+    security_opt:
+      - no-new-privileges:true
+    # DECISÃO DE HARDENING 4 (Limites de CPU e Memória):
+    # Protege o notebook Debian contra ataques de negação de serviço (DoS) acidentais
+    # ou loops de requisições durante o evento, garantindo recursos para a Plataforma CTF.
+    mem_limit: ${SHOP_MEM_LIMIT:-512m}
+    cpus: ${SHOP_CPU_LIMIT:-1.0}
+    deploy:
+      resources:
+        limits:
+          cpus: "${SHOP_CPU_LIMIT:-1.0}"
+          memory: ${SHOP_MEM_LIMIT:-512m}
+        reservations:
+          cpus: "0.25"
+          memory: 128m
+    networks:
+      - shop-net
+
+# ============================================================================
+# Redes Isoladas por Domínio de Segurança
+# ============================================================================
+networks:
+  # Rede exclusiva entre `platform` e `platform-db`
+  platform-net:
+    driver: bridge
+    name: proz-ctf-platform-net
+
+  # Rede exclusiva entre `shop` e `shop-db`
+  shop-net:
+    driver: bridge
+    name: proz-ctf-shop-net
+
+# ============================================================================
+# Volumes Persistentes dos Bancos PostgreSQL
+# ============================================================================
+volumes:
+  platform-db-data:
+    name: proz-ctf-platform-db-data
+  shop-db-data:
+    name: proz-ctf-shop-db-data
