@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # ============================================================================
 # PROZ CTF — Dockerfile Multi-Stage da Loja Vulnerável (`shop`)
 # ============================================================================
@@ -55,8 +54,10 @@ COPY . .
 RUN npx prisma generate --schema=prisma/platform.prisma \
   && npx prisma generate --schema=prisma/shop.prisma
 
-# Pré-empacota o seed em CommonJS puro para rodar em container `read_only: true`
-RUN node ./node_modules/esbuild/bin/esbuild prisma/seed.ts \
+# Pré-empacota o seed em CommonJS puro para rodar em container `read_only: true`.
+# DECISÃO: No Linux (Debian), `node_modules/esbuild/bin/esbuild` é um binário nativo ELF
+# (e não um script JS), por isso é executado diretamente via `./node_modules/.bin/esbuild`.
+RUN ./node_modules/.bin/esbuild prisma/seed.ts \
   --bundle \
   --platform=node \
   --target=node20 \
