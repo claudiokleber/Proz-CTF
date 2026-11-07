@@ -24,9 +24,13 @@
 #    notebook Debian (construindo apenas se ainda não existirem localmente).
 #    Como os volumes foram apagados, o `docker-entrypoint.sh` detecta "primeira
 #    subida" e executa `prisma migrate deploy` + `seed` automaticamente.
-# 6. Extração segura de `FLAGS_REAIS.txt` (`chmod 600`): Copia o gabarito gerado
-#    pelo container `platform` para a máquina do instrutor com permissão restrita
-#    apenas ao dono do arquivo.
+# 6. Verificação de estabilidade pós-subida (até 120s): Inspeciona o estado e
+#    `RestartCount` de `proz-ctf-platform` e `proz-ctf-shop` via `docker inspect` e
+#    confirma a conclusão do seed nos dois serviços antes de declarar sucesso. Se
+#    qualquer container cair ou entrar em loop de reinício, exibe as últimas 40
+#    linhas de log com flags mascaradas (`CTF{...}`) e sai com código 1.
+# 7. Extração segura de `FLAGS_REAIS.txt` (`chmod 600`): Só copia o gabarito depois
+#    que o container `platform` está comprovadamente estável (`running`, sem restart).
 # ============================================================================
 
 set -euo pipefail
@@ -91,19 +95,72 @@ fi
 echo "🚀 Subindo containers limpos (platform-db, shop-db, platform, shop)..."
 docker compose up -d
 
-# 6. Aguarda o entrypoint do container `platform` concluir o seed e gerar FLAGS_REAIS.txt
-echo "⏳ Aguardando conclusão das migrations e do seed inicial..."
-MAX_WAIT=60
+# 6. Aguarda até 120 segundos até que `platform` e `shop` concluam o seed e
+#    permaneçam com estado `running` e sem reiniciar (`RestartCount == 0`).
+echo "⏳ Aguardando migrations, seed e estabilização dos containers (até 120s)..."
+MAX_WAIT=120
 ELAPSED=0
+STABLE=false
+
 while [ $ELAPSED -lt $MAX_WAIT ]; do
-  if docker compose exec -T platform test -f /app/FLAGS_REAIS.txt >/dev/null 2>&1; then
-    docker compose cp platform:/app/FLAGS_REAIS.txt ./FLAGS_REAIS.txt >/dev/null 2>&1 || true
-    chmod 600 ./FLAGS_REAIS.txt 2>/dev/null || true
+  PLATFORM_STATE="$(docker inspect -f '{{.State.Status}} {{.State.Restarting}} {{.RestartCount}}' proz-ctf-platform 2>/dev/null || echo 'missing true 99')"
+  SHOP_STATE="$(docker inspect -f '{{.State.Status}} {{.State.Restarting}} {{.RestartCount}}' proz-ctf-shop 2>/dev/null || echo 'missing true 99')"
+
+  PLATFORM_STATUS="$(echo "$PLATFORM_STATE" | awk '{print $1}')"
+  PLATFORM_RESTARTING="$(echo "$PLATFORM_STATE" | awk '{print $2}')"
+  PLATFORM_RESTARTS="$(echo "$PLATFORM_STATE" | awk '{print $3}')"
+
+  SHOP_STATUS="$(echo "$SHOP_STATE" | awk '{print $1}')"
+  SHOP_RESTARTING="$(echo "$SHOP_STATE" | awk '{print $2}')"
+  SHOP_RESTARTS="$(echo "$SHOP_STATE" | awk '{print $3}')"
+
+  # Se qualquer um dos dois containers já reiniciou ou morreu, interrompe imediatamente
+  if [ "$PLATFORM_RESTARTING" = "true" ] || [ "${PLATFORM_RESTARTS:-0}" -gt 0 ] || [ "$PLATFORM_STATUS" = "exited" ] || [ "$PLATFORM_STATUS" = "dead" ] || \
+     [ "$SHOP_RESTARTING" = "true" ]     || [ "${SHOP_RESTARTS:-0}" -gt 0 ]     || [ "$SHOP_STATUS" = "exited" ]     || [ "$SHOP_STATUS" = "dead" ]; then
+    echo "❌ Falha detectada: um dos containers entrou em loop de reinício ou encerrou com erro." >&2
+    echo "   Estado platform: status=${PLATFORM_STATUS}, restarting=${PLATFORM_RESTARTING}, restarts=${PLATFORM_RESTARTS}" >&2
+    echo "   Estado shop:     status=${SHOP_STATUS}, restarting=${SHOP_RESTARTING}, restarts=${SHOP_RESTARTS}" >&2
     break
   fi
+
+  # Verifica se ambos estão running (sem restarts), se o platform gerou FLAGS_REAIS.txt
+  # e se o entrypoint do shop já concluiu o seed e iniciou o servidor Next.js
+  if [ "$PLATFORM_STATUS" = "running" ] && [ "$SHOP_STATUS" = "running" ]; then
+    if docker compose exec -T platform test -f /app/FLAGS_REAIS.txt >/dev/null 2>&1 && \
+       docker compose logs shop 2>/dev/null | grep -q "Banco pronto. Iniciando servidor Next.js"; then
+      # Aguarda mais 2s e revalida para garantir que nenhum processo caiu logo após o seed
+      sleep 2
+      PLATFORM_RECHECK="$(docker inspect -f '{{.State.Status}} {{.State.Restarting}} {{.RestartCount}}' proz-ctf-platform 2>/dev/null || echo 'missing true 99')"
+      SHOP_RECHECK="$(docker inspect -f '{{.State.Status}} {{.State.Restarting}} {{.RestartCount}}' proz-ctf-shop 2>/dev/null || echo 'missing true 99')"
+      if [ "$PLATFORM_RECHECK" = "running false 0" ] && [ "$SHOP_RECHECK" = "running false 0" ]; then
+        STABLE=true
+        break
+      fi
+    fi
+  fi
+
   sleep 2
   ELAPSED=$((ELAPSED + 2))
 done
+
+if [ "$STABLE" != "true" ]; then
+  echo "" >&2
+  echo "============================================================================" >&2
+  echo "❌ [Proz CTF] ERRO: Os serviços 'platform' e/ou 'shop' não estabilizaram em ${MAX_WAIT}s!" >&2
+  echo "============================================================================" >&2
+  docker compose ps >&2 || true
+  echo "" >&2
+  echo "--- Últimas 40 linhas de log de 'platform' (flags mascaradas) ---" >&2
+  docker compose logs --tail=40 platform 2>&1 | sed -E 's/CTF\{[^}]*\}/CTF{...}/g' >&2 || true
+  echo "" >&2
+  echo "--- Últimas 40 linhas de log de 'shop' (flags mascaradas) ---" >&2
+  docker compose logs --tail=40 shop 2>&1 | sed -E 's/CTF\{[^}]*\}/CTF{...}/g' >&2 || true
+  exit 1
+fi
+
+# 7. Extrai o FLAGS_REAIS.txt somente após confirmar que o container `platform` está estável
+docker compose cp platform:/app/FLAGS_REAIS.txt ./FLAGS_REAIS.txt >/dev/null 2>&1
+chmod 600 ./FLAGS_REAIS.txt
 
 echo ""
 echo "============================================================================"

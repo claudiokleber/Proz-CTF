@@ -2,30 +2,42 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
-import { PrismaClient as PlatformPrismaClient } from "../src/generated/platform-client";
-import { PrismaClient as ShopPrismaClient } from "../src/generated/shop-client";
+import type { PrismaClient as PlatformPrismaClient } from "../src/generated/platform-client";
+import type { PrismaClient as ShopPrismaClient } from "../src/generated/shop-client";
 
 // ============================================================================
 // DECISÃO DE ISOLAMENTO NO SEED (Containers Independentes):
-// Os clientes Prisma são instanciados de forma preguiçosa (lazy) apenas para o
-// banco alvo da execução atual (`--platform-only`, `--shop-only` ou ambos).
-// Assim, o container `platform` nunca tenta instanciar `ShopPrismaClient` (nem
-// exige `DATABASE_URL_SHOP`) e o container `shop` nunca instancia `PlatformPrismaClient`
-// (nem exige `DATABASE_URL_PLATFORM`).
+// Os módulos `../src/generated/platform-client` e `../src/generated/shop-client`
+// são importados no topo APENAS como tipos (`import type`, removidos em tempo de
+// compilação) e carregados via `require()` preguiçoso (lazy) somente dentro de
+// `getPlatformDb()` e `getShopDb()`.
+// Assim, após o bundle com `esbuild --external:../src/generated/*`, o arquivo
+// `prisma/seed.cjs` NÃO executa `require` global dos dois clientes no carregamento:
+// - O container `platform` (`--platform-only`) carrega apenas `platform-client`;
+// - O container `shop` (`--shop-only`) carrega apenas `shop-client`;
+// - O modo local sem Docker (`npm run seed`) carrega ambos normalmente.
 // ============================================================================
 let _platformDb: PlatformPrismaClient | null = null;
 let _shopDb: ShopPrismaClient | null = null;
 
 function getPlatformDb(): PlatformPrismaClient {
   if (!_platformDb) {
-    _platformDb = new PlatformPrismaClient();
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PrismaClient } = require("../src/generated/platform-client") as {
+      PrismaClient: new () => PlatformPrismaClient;
+    };
+    _platformDb = new PrismaClient();
   }
   return _platformDb;
 }
 
 function getShopDb(): ShopPrismaClient {
   if (!_shopDb) {
-    _shopDb = new ShopPrismaClient();
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PrismaClient } = require("../src/generated/shop-client") as {
+      PrismaClient: new () => ShopPrismaClient;
+    };
+    _shopDb = new PrismaClient();
   }
   return _shopDb;
 }
@@ -767,7 +779,14 @@ async function main() {
   const platformAdminPasswordPlain =
     process.env.PLATFORM_ADMIN_INITIAL_PASSWORD ||
     `ProzInstrutor@${crypto.randomBytes(4).toString("hex")}`;
-  const shopAdminInitialPassword = `AdminMaster@${crypto.randomBytes(6).toString("hex")}`;
+  const flagSecret = (process.env.CTF_FLAG_SECRET || "").trim();
+  const shopAdminInitialPassword = flagSecret
+    ? `AdminMaster@${crypto
+        .createHmac("sha256", flagSecret)
+        .update("proz-ctf-shop-admin-initial-password-v1")
+        .digest("hex")
+        .slice(0, 12)}`
+    : `AdminMaster@${crypto.randomBytes(6).toString("hex")}`;
 
   if (cleanTestOnly) {
     const platformDb = getPlatformDb();
