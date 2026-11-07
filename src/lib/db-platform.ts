@@ -1,16 +1,25 @@
 import { PrismaClient as PlatformPrismaClient } from "../generated/platform-client";
 
-// DECISÃO DE CONECTIVIDADE (PostgreSQL no Docker + Fallback em Build):
-// Durante `next build` na construção da imagem Docker, o container do banco ainda não
-// está acessível. Fornecemos uma URL sintaticamente válida como fallback na instanciação
-// preguiçosa do PrismaClient, enquanto em execução real ele usa `DATABASE_URL_PLATFORM`
-// apontando para `platform-db:5432` na rede isolada `platform-net`.
-function resolveDatabaseUrl(rawUrl: string | undefined, defaultUrl: string): string {
-  const base = rawUrl || defaultUrl;
-  if (!base.startsWith("file:")) return base;
-  if (base.includes("connection_limit=")) return base;
-  const sep = base.includes("?") ? "&" : "?";
-  return `${base}${sep}connection_limit=1&socket_timeout=30`;
+// DECISÃO DE SEGURANÇA E CONECTIVIDADE:
+// 1. Sem credenciais padrão fixas (`postgres:postgres@...`): em execução real,
+//    `DATABASE_URL_PLATFORM` DEVE estar definida (via `docker-compose.yml` em produção
+//    ou `.env.local` gerado por `./gerar-env.sh --dev` no desenvolvimento local).
+// 2. Compatibilidade com `next build` no Docker: durante a fase `phase-production-build`,
+//    o Next.js importa os módulos de rota para análise estática sem banco ativo; apenas
+//    nessa fase fornecemos uma URL sintática inofensiva para o construtor do PrismaClient.
+function resolvePlatformDatabaseUrl(): string {
+  const url = process.env.DATABASE_URL_PLATFORM?.trim();
+  if (url) {
+    return url;
+  }
+
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return "postgresql://build-placeholder:0000@127.0.0.1:5432/build_only?schema=public";
+  }
+
+  throw new Error(
+    "DATABASE_URL_PLATFORM não definida. Rode npm run dev:setup ou veja o README"
+  );
 }
 
 const globalForPlatformPrisma = globalThis as unknown as {
@@ -22,10 +31,7 @@ export const platformDb =
   new PlatformPrismaClient({
     datasources: {
       db: {
-        url: resolveDatabaseUrl(
-          process.env.DATABASE_URL_PLATFORM,
-          "postgresql://postgres:postgres@platform-db:5432/proz_ctf_platform?schema=public"
-        ),
+        url: resolvePlatformDatabaseUrl(),
       },
     },
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],

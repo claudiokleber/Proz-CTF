@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
+    "dev:db": "docker compose -f docker-compose.dev.yml up -d --wait",
+    "dev:setup": "npm run prisma:generate && node --env-file=.env --env-file=.env.local ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/platform.prisma && node --env-file=.env --env-file=.env.local ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/shop.prisma && node --env-file=.env --env-file=.env.local ./node_modules/tsx/dist/cli.mjs prisma/seed.ts",
+    "dev:reset": "docker compose -f docker-compose.dev.yml down -v --remove-orphans && npm run dev:db && npm run dev:setup",
+    "dev:down": "docker compose -f docker-compose.dev.yml down",
     "build": "prisma generate --schema=prisma/platform.prisma && prisma generate --schema=prisma/shop.prisma && next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lan": "next build && next start -H 0.0.0.0 -p 3000",

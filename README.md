@@ -91,65 +91,36 @@ docker compose logs platform
 
 ---
 
-## 3. Como Executar Localmente sem Docker (Desenvolvimento)
+## 3. Como Executar no PC de Desenvolvimento (`npm run dev` + PostgreSQL via `docker-compose.dev.yml`)
 
-### Passo 1 — Configurar variáveis de ambiente
-Crie um arquivo `.env` apontando para os dois bancos locais e gere um `PLATFORM_SESSION_SECRET` exclusivo com `openssl rand -hex 32`:
+> **Importante:**
+> - Os schemas Prisma (`platform.prisma` e `shop.prisma`) utilizam **PostgreSQL**. O **Docker Desktop** (ou Docker Engine) precisa estar **ligado** no PC para subir os dois bancos locais (`platform-db` em `127.0.0.1:5433` e `shop-db` em `127.0.0.1:5434`).
+> - O ambiente de **produção / sala de aula (notebook Debian)** continua utilizando exclusivamente `docker-compose.yml` e `./reset.sh` (Seção 2).
 
-```env
-DATABASE_URL_PLATFORM="file:./platform.db"
-DATABASE_URL_SHOP="file:./shop.db"
-# Gere um segredo aleatório único executando no terminal: openssl rand -hex 32
-PLATFORM_SESSION_SECRET="<cole_aqui_a_saida_de_openssl_rand_-hex_32>"
+### Passo 1 — Gerar `.env` e `.env.local` (com URLs apontando para `127.0.0.1:5433` e `127.0.0.1:5434`)
+No terminal (Git Bash / WSL / Linux / macOS):
 
-# Opcional: chave de API compatível com OpenAI para o ProzBot.
-# Se deixado em branco, o chatbot usa automaticamente o motor simulado local.
-AI_API_KEY=""
-AI_API_MODEL="gpt-4o-mini"
+```bash
+./gerar-env.sh && ./gerar-env.sh --dev
 ```
 
-### Passo 2 — Instalar dependências, criar tabelas e popular (`seed`)
+- `./gerar-env.sh` cria o `.env` com segredos aleatórios (`PLATFORM_DB_PASSWORD`, `SHOP_DB_PASSWORD`, `PLATFORM_SESSION_SECRET`, `CTF_FLAG_SECRET`).
+- `./gerar-env.sh --dev` gera o `.env.local` (ignorado pelo Git) com `DATABASE_URL_PLATFORM` (`127.0.0.1:5433`) e `DATABASE_URL_SHOP` (`127.0.0.1:5434`) usando as mesmas senhas do `.env`.
+
+### Passo 2 — Subir os bancos de desenvolvimento, aplicar migrations/seed e iniciar o Next.js
 ```bash
 npm install
-npm run prisma:generate
-npm run db:push
-npm run seed
+npm run dev:db
+npm run dev:setup
+npm run dev
 ```
 
-O comando `npm run seed`:
-1. Gera **17 flags aleatórias** com `crypto.randomBytes` no formato `CTF{proz_dXX_xxxxxxxxxxxxxxxx}`.
-2. Salva **apenas o hash SHA-256** (`flagHash`) de cada flag no banco `platform`.
-3. Cria a conta de instrutor (`instrutor@proz.com`) e os 17 desafios com descrições, pontuações e dicas.
-4. Popula o banco `shop` com os 4 usuários obrigatórios, 18 produtos, 4 pedidos sequenciais, 36 avaliações legítimas e o cupom `BEMVINDO10`.
-5. Imprime todas as flags e senhas no terminal e salva o gabarito em **`FLAGS_REAIS.txt`** (fora do controle de versão).
-
-### Passo 3 — Abrir o servidor na Rede Local (LAN) para os ~30 Alunos
-
-1. Descubra o IP da máquina do instrutor na rede local abrindo o PowerShell/CMD e rodando:
-   ```powershell
-   ipconfig
-   ```
-   Anote o **Endereço IPv4** da sua placa Wi-Fi ou Ethernet (ex.: `192.168.1.50`).
-
-2. Inicie o servidor escutando em todas as interfaces de rede (`0.0.0.0:3000`):
-   - **Modo Sala de Aula / Alta Performance (Recomendado para ~30 alunos simultâneos):**
-     ```bash
-     npm run lan
-     ```
-     *(Compila o projeto com `next build` e sobe o servidor otimizado `next start -H 0.0.0.0 -p 3000`, consumindo muito menos CPU/RAM sob 30 acessos simultâneos).*
-   - **Modo Desenvolvimento:**
-     ```bash
-     npm run dev
-     ```
-     *(Já configurado com `next dev -H 0.0.0.0 -p 3000`).*
-
-3. Os alunos acessam pelo navegador das máquinas deles usando o IP do instrutor:
-   - **Portal Inicial:** `http://SEU_IP_LOCAL:3000` (ex.: `http://192.168.1.50:3000`)
-   - **Plataforma CTF (Equipes, Desafios e Placar):** `http://SEU_IP_LOCAL:3000/ctf`
-   - **Painel do Instrutor (Admin CTF):** `http://SEU_IP_LOCAL:3000/ctf/admin`
-   - **Proz Store (Loja Vulnerável Alvo):** `http://SEU_IP_LOCAL:3000/loja`
-
-> **Dica de Firewall no Windows:** Caso os alunos não consigam conectar na porta `3000` na primeira vez, clique em **"Permitir acesso"** no aviso do Windows Defender Firewall para o Node.js (redes privadas e públicas) ou libere a porta `3000` TCP.
+O que cada script faz:
+- **`npm run dev:db`**: Sobe os 2 bancos PostgreSQL do `docker-compose.dev.yml` (publicados apenas em `127.0.0.1:5433` e `127.0.0.1:5434`) e aguarda ambos ficarem `healthy` (`--wait`).
+- **`npm run dev:setup`**: Gera os clientes Prisma, executa `prisma migrate deploy` nos dois bancos e roda o `seed` inicial (salvando o gabarito em `FLAGS_REAIS.txt`).
+- **`npm run dev`**: Inicia o servidor Next.js em `http://localhost:3000` (Plataforma em `/ctf` e Loja em `/loja`).
+- **`npm run dev:reset`**: Derruba os volumes de desenvolvimento (`down -v`), sobe novamente os bancos limpos e reexecuta o `dev:setup`.
+- **`npm run dev:down`**: Para os containers de banco de dados do ambiente de desenvolvimento.
 
 ---
 
@@ -179,13 +150,13 @@ O sistema foi desenhado para que os alunos nunca precisem digitar uma flag manua
 
 ## 5. Como resetar o ambiente ou apenas a Loja entre turmas
 
-- **Via Docker Compose (Reset completo — derruba, apaga volumes e sobe limpo):**
+- **Produção / Sala de Aula via Docker Compose (`docker-compose.yml` — derruba, apaga volumes e sobe limpo):**
   ```bash
   ./reset.sh
   ```
-- **Localmente via Node.js (apenas o banco da Loja `shop`):**
+- **Desenvolvimento no PC (`docker-compose.dev.yml`):**
   ```bash
-  npm run seed:shop
+  npm run dev:reset
   ```
 
 Se você também quiser **zerar apenas o placar de equipes** na Plataforma CTF sem recriar os containers:

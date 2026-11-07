@@ -181,7 +181,7 @@ function ShopCatalogContent() {
               <div>
                 <Link
                   href={`/loja/produto/${prod.id}`}
-                  className="block relative h-48 bg-slate-950 overflow-hidden"
+                  className="block relative aspect-[3/2] bg-slate-950 overflow-hidden"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -189,7 +189,7 @@ function ShopCatalogContent() {
                     alt={prod.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                   />
-                  <span className="absolute top-3 left-3 px-2 py-0.5 rounded bg-slate-950/85 text-slate-300 font-mono text-[10px] border border-slate-800">
+                  <span className="absolute top-3 right-3 px-2 py-0.5 rounded bg-slate-950/85 text-slate-300 font-mono text-[10px] border border-slate-800">
                     ID #{prod.id}
                   </span>
                 </Link>

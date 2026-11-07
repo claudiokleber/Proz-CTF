@@ -1,0 +1,65 @@
+# ============================================================================
+# PROZ CTF — Orquestração de Bancos para Desenvolvimento Local (`docker-compose.dev.yml`)
+# ============================================================================
+# Objetivo: Subir exclusivamente os dois bancos PostgreSQL 16 (`platform-db` e
+# `shop-db`) para desenvolvimento local no PC (onde o Next.js roda diretamente
+# no host via `npm run dev`), mantendo o `docker-compose.yml` de produção intacto.
+#
+# DECISÕES TÉCNICAS E DE SEGURANÇA:
+# 1. Projeto e volumes isolados (`name: proz-ctf-dev`):
+#    Usa nomes de containers e volumes próprios (`proz-ctf-dev-*`), evitando
+#    qualquer colisão com os volumes do stack de produção (`docker-compose.yml`).
+# 2. Bind restrito ao loopback (`127.0.0.1:5433:5432` e `127.0.0.1:5434:5432`):
+#    As portas são publicadas SOMENTE em `127.0.0.1` (nunca em `0.0.0.0`),
+#    garantindo que os bancos de desenvolvimento não fiquem expostos na LAN/Wi-Fi.
+# 3. Sem senhas padrão embutidas (`:?`):
+#    Exige `PLATFORM_DB_PASSWORD` e `SHOP_DB_PASSWORD` definidos no `.env`
+#    (gerados via `./gerar-env.sh`).
+# ============================================================================
+
+name: proz-ctf-dev
+
+services:
+  platform-db:
+    image: postgres:16-bookworm
+    container_name: proz-ctf-dev-platform-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      POSTGRES_USER: ${PLATFORM_DB_USER:-proz_platform}
+      POSTGRES_PASSWORD: ${PLATFORM_DB_PASSWORD:?defina PLATFORM_DB_PASSWORD no .env (rode ./gerar-env.sh)}
+      POSTGRES_DB: ${PLATFORM_DB_NAME:-proz_ctf_platform}
+    volumes:
+      - platform-dev-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  shop-db:
+    image: postgres:16-bookworm
+    container_name: proz-ctf-dev-shop-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5434:5432"
+    environment:
+      POSTGRES_USER: ${SHOP_DB_USER:-proz_shop}
+      POSTGRES_PASSWORD: ${SHOP_DB_PASSWORD:?defina SHOP_DB_PASSWORD no .env (rode ./gerar-env.sh)}
+      POSTGRES_DB: ${SHOP_DB_NAME:-proz_ctf_shop}
+    volumes:
+      - shop-dev-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+volumes:
+  platform-dev-db-data:
+    name: proz-ctf-dev-platform-db-data
+  shop-dev-db-data:
+    name: proz-ctf-dev-shop-db-data

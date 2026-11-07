@@ -237,13 +237,16 @@ export default function ProductDetailPage() {
         <div className="space-y-10">
           {/* Card Principal do Produto */}
           <div className="grid md:grid-cols-2 gap-8 rounded-2xl bg-slate-900 border border-slate-800 p-6 md:p-8">
-            <div className="rounded-xl overflow-hidden bg-slate-950 border border-slate-800 h-72 md:h-80">
+            <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800 aspect-[3/2]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
+              <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded bg-slate-950/85 text-slate-300 font-mono text-xs border border-slate-800">
+                ID #{product.id}
+              </span>
             </div>
 
             <div className="flex flex-col justify-between space-y-6">
