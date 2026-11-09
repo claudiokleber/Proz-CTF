@@ -1,19 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#ffedd5"/>
+      <stop offset="50%" stop-color="#fce7f3"/>
+      <stop offset="100%" stop-color="#e0e7ff"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="45%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="stand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="50%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#334155"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#8b5cf6" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#8b5cf6" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#8b5cf6" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#8b5cf6" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#8b5cf6" text-anchor="middle">PROZ #04</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzView 27 IPS</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Monitor QHD 165Hz · 1ms</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="110" cy="100" r="130" fill="#fb923c" opacity="0.18"/>
+  <circle cx="490" cy="300" r="140" fill="#818cf8" opacity="0.2"/>
+  <ellipse cx="300" cy="360" rx="150" ry="14" fill="#0f172a" opacity="0.18"/>
+  <!-- Ergonomic Stand Column -->
+  <rect x="282" y="255" width="36" height="82" rx="4" fill="url(#stand)"/>
+  <rect x="292" y="275" width="16" height="38" rx="8" fill="#1e293b"/>
+  <circle cx="300" cy="294" r="5" fill="#f43f5e"/>
+  <!-- V-shaped Gaming Base -->
+  <polygon points="300,325 185,358 205,364 300,340 395,364 415,358" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+  <polygon points="300,331 225,353 235,356 300,338 365,356 375,353" fill="#f43f5e"/>
+  <!-- Ultra-thin Bezel 27" Monitor Frame -->
+  <rect x="95" y="42" width="410" height="236" rx="10" fill="#0f172a" stroke="#334155" stroke-width="3"/>
+  <!-- IPS QHD Screen -->
+  <rect x="103" y="50" width="394" height="214" rx="4" fill="url(#panel)"/>
+  <!-- Vivid Geometric Landscape / Graphics on Display -->
+  <circle cx="300" cy="145" r="58" fill="#fde047" opacity="0.85"/>
+  <polygon points="103,264 195,165 290,264" fill="#312e81" opacity="0.85"/>
+  <polygon points="220,264 335,148 450,264" fill="#1e1b4b" opacity="0.9"/>
+  <polygon points="360,264 435,185 497,264" fill="#4c1d95" opacity="0.85"/>
+  <!-- Crosshair / 165Hz Gaming OSD Overlay -->
+  <circle cx="300" cy="145" r="18" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.7"/>
+  <line x1="276" y1="145" x2="324" y2="145" stroke="#ffffff" stroke-width="1.5" opacity="0.7"/>
+  <line x1="300" y1="121" x2="300" y2="169" stroke="#ffffff" stroke-width="1.5" opacity="0.7"/>
+  <!-- Top right refresh rate indicator bars -->
+  <rect x="435" y="62" width="48" height="20" rx="4" fill="#0f172a" opacity="0.65"/>
+  <circle cx="447" cy="72" r="4" fill="#22c55e"/>
+  <rect x="456" y="69" width="20" height="6" rx="3" fill="#ffffff" opacity="0.9"/>
+  <!-- Screen Glare -->
+  <polygon points="103,50 245,50 155,264 103,264" fill="#ffffff" opacity="0.14"/>
+  <!-- Bottom Chin & Power LED -->
+  <rect x="285" y="269" width="30" height="4" rx="2" fill="#475569"/>
+  <circle cx="480" cy="271" r="2.5" fill="#22c55e"/>
 </svg>

@@ -1,19 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="50%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#ede9fe"/>
+    </linearGradient>
+    <linearGradient id="mesh" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#6366f1"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#f59e0b" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#f59e0b" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#f59e0b" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#f59e0b" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#f59e0b" text-anchor="middle">PROZ #10</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzChair Mesh</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Cadeira Ergonomica Bracos 4D</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="460" cy="110" r="130" fill="#38bdf8" opacity="0.18"/>
+  <circle cx="140" cy="290" r="140" fill="#fbbf24" opacity="0.18"/>
+  <ellipse cx="300" cy="374" rx="125" ry="12" fill="#0f172a" opacity="0.2"/>
+  <!-- 5-Star Base & Casters -->
+  <polygon points="292,336 308,336 395,358 390,365 300,348 210,365 205,358" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+  <rect x="294" y="276" width="12" height="72" rx="3" fill="#0f172a"/>
+  <rect x="290" y="276" width="20" height="32" rx="3" fill="#334155"/>
+  <!-- Wheels -->
+  <circle cx="208" cy="368" r="8" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+  <circle cx="255" cy="370" r="8" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+  <circle cx="300" cy="372" r="8" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+  <circle cx="345" cy="370" r="8" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+  <circle cx="392" cy="368" r="8" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+  <!-- 4D Armrests -->
+  <path d="M225,255 L205,255 L205,200" fill="none" stroke="#334155" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M375,255 L395,255 L395,200" fill="none" stroke="#334155" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="186" y="192" width="36" height="12" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="2"/>
+  <rect x="378" y="192" width="36" height="12" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="2"/>
+  <!-- Adjustable Headrest -->
+  <rect x="262" y="30" width="76" height="38" rx="14" fill="url(#mesh)" stroke="url(#frame)" stroke-width="3"/>
+  <rect x="290" y="68" width="20" height="14" fill="#334155"/>
+  <!-- Breathable Mesh Backrest -->
+  <path d="M242,80 L358,80 C372,80 378,95 374,125 L360,235 C358,245 348,252 335,252 L265,252 C252,252 242,245 240,235 L226,125 C222,95 228,80 242,80 Z" fill="url(#mesh)" stroke="url(#frame)" stroke-width="4"/>
+  <!-- Mesh Breathable Grid Lines -->
+  <g stroke="#475569" stroke-width="1.5" opacity="0.6">
+    <line x1="242" y1="105" x2="358" y2="105"/>
+    <line x1="238" y1="125" x2="362" y2="125"/>
+    <line x1="238" y1="145" x2="362" y2="145"/>
+    <line x1="240" y1="165" x2="360" y2="165"/>
+    <line x1="244" y1="185" x2="356" y2="185"/>
+  </g>
+  <!-- Dynamic Lumbar Support Cushion -->
+  <rect x="246" y="192" width="108" height="44" rx="16" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+  <line x1="265" y1="214" x2="335" y2="214" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <!-- Ergonomic Waterfall Seat Cushion -->
+  <rect x="218" y="246" width="164" height="32" rx="16" fill="#0f172a" stroke="#475569" stroke-width="2.5"/>
+  <path d="M235,254 L365,254" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
 </svg>

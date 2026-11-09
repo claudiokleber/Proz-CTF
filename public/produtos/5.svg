@@ -1,19 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#ede9fe"/>
+      <stop offset="50%" stop-color="#fae8ff"/>
+      <stop offset="100%" stop-color="#ffe4e6"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="cup" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#ec4899" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#ec4899" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#ec4899" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#ec4899" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#ec4899" text-anchor="middle">PROZ #05</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzSound 7.1</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Headset Studio Cancelamento</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="480" cy="100" r="120" fill="#c084fc" opacity="0.2"/>
+  <circle cx="120" cy="300" r="140" fill="#fb7185" opacity="0.18"/>
+  <ellipse cx="300" cy="360" rx="140" ry="15" fill="#0f172a" opacity="0.16"/>
+  <!-- 7.1 Sound Waves (left and right) -->
+  <path d="M125,190 A65,65 0 0,0 125,270" fill="none" stroke="#a855f7" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <path d="M105,175 A90,90 0 0,0 105,285" fill="none" stroke="#ec4899" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+  <path d="M475,190 A65,65 0 0,1 475,270" fill="none" stroke="#a855f7" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <path d="M495,175 A90,90 0 0,1 495,285" fill="none" stroke="#ec4899" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+  <!-- Outer Headband Arch -->
+  <path d="M175,210 C175,65 425,65 425,210" fill="none" stroke="url(#band)" stroke-width="22" stroke-linecap="round"/>
+  <!-- Padded Inner Headband Cushion -->
+  <path d="M215,120 C255,82 345,82 385,120" fill="none" stroke="url(#accent)" stroke-width="14" stroke-linecap="round"/>
+  <!-- Metal Sliders -->
+  <rect x="167" y="180" width="16" height="35" rx="4" fill="#94a3b8"/>
+  <rect x="417" y="180" width="16" height="35" rx="4" fill="#94a3b8"/>
+  <!-- Viscoelastic Foam Cushions (Inner) -->
+  <rect x="188" y="182" width="32" height="106" rx="16" fill="#0f172a"/>
+  <rect x="380" y="182" width="32" height="106" rx="16" fill="#0f172a"/>
+  <!-- Left & Right Ear Cups (Outer) -->
+  <rect x="148" y="175" width="52" height="120" rx="26" fill="url(#cup)" stroke="#475569" stroke-width="2"/>
+  <rect x="400" y="175" width="52" height="120" rx="26" fill="url(#cup)" stroke="#475569" stroke-width="2"/>
+  <!-- RGB Rings on Ear Cups -->
+  <rect x="160" y="192" width="18" height="86" rx="9" fill="none" stroke="url(#accent)" stroke-width="4"/>
+  <rect x="422" y="192" width="18" height="86" rx="9" fill="none" stroke="url(#accent)" stroke-width="4"/>
+  <!-- Cardioid Boom Microphone -->
+  <path d="M172,285 C172,332 230,342 282,332" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+  <rect x="275" y="320" width="34" height="20" rx="10" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+  <circle cx="299" cy="330" r="3.5" fill="#ec4899"/>
 </svg>

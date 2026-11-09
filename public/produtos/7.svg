@@ -1,19 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="50%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#dcfce7"/>
     </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <radialGradient id="lens" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="40%" stop-color="#1e3a8a"/>
+      <stop offset="80%" stop-color="#090d16"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#3b82f6" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#3b82f6" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#3b82f6" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#3b82f6" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#3b82f6" text-anchor="middle">PROZ #07</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzCam 1080p</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Webcam Full HD 60fps</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="130" cy="100" r="120" fill="#38bdf8" opacity="0.18"/>
+  <circle cx="480" cy="300" r="140" fill="#4ade80" opacity="0.2"/>
+  <ellipse cx="300" cy="355" rx="135" ry="15" fill="#0f172a" opacity="0.18"/>
+  <!-- Articulated Monitor Clip / Stand Base -->
+  <polygon points="245,280 355,280 385,348 215,348" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+  <rect x="200" y="340" width="200" height="14" rx="7" fill="#334155"/>
+  <!-- Pivot Joint Neck -->
+  <rect x="276" y="232" width="48" height="54" rx="10" fill="#475569"/>
+  <circle cx="300" cy="256" r="12" fill="#1e293b"/>
+  <!-- Privacy Cover Slider Tab on Top -->
+  <rect x="275" y="96" width="50" height="14" rx="5" fill="#64748b"/>
+  <rect x="290" y="100" width="20" height="6" rx="3" fill="#0f172a"/>
+  <!-- Main Webcam Cylindrical / Rectangular Housing -->
+  <rect x="135" y="108" width="330" height="132" rx="66" fill="url(#body)" stroke="#64748b" stroke-width="3"/>
+  <!-- Left & Right Stereo Microphones Grille -->
+  <g fill="#020617" opacity="0.85">
+    <rect x="165" y="148" width="48" height="52" rx="12"/>
+    <rect x="387" y="148" width="48" height="52" rx="12"/>
+  </g>
+  <g fill="#475569">
+    <circle cx="180" cy="162" r="3"/><circle cx="192" cy="162" r="3"/><circle cx="204" cy="162" r="3"/>
+    <circle cx="180" cy="174" r="3"/><circle cx="192" cy="174" r="3"/><circle cx="204" cy="174" r="3"/>
+    <circle cx="180" cy="186" r="3"/><circle cx="192" cy="186" r="3"/><circle cx="204" cy="186" r="3"/>
+    <circle cx="396" cy="162" r="3"/><circle cx="408" cy="162" r="3"/><circle cx="420" cy="162" r="3"/>
+    <circle cx="396" cy="174" r="3"/><circle cx="408" cy="174" r="3"/><circle cx="420" cy="174" r="3"/>
+    <circle cx="396" cy="186" r="3"/><circle cx="408" cy="186" r="3"/><circle cx="420" cy="186" r="3"/>
+  </g>
+  <!-- Outer Silver / Cyan Lens Ring -->
+  <circle cx="300" cy="174" r="54" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="300" cy="174" r="44" fill="#020617" stroke="#64748b" stroke-width="2"/>
+  <!-- Glass Optical Lens -->
+  <circle cx="300" cy="174" r="34" fill="url(#lens)"/>
+  <circle cx="300" cy="174" r="14" fill="#020617" opacity="0.65"/>
+  <!-- Lens Glare Highlights -->
+  <ellipse cx="288" cy="160" rx="10" ry="6" transform="rotate(-30 288 160)" fill="#ffffff" opacity="0.7"/>
+  <circle cx="312" cy="186" r="4" fill="#38bdf8" opacity="0.8"/>
+  <!-- Active Recording Status LED (Green) -->
+  <circle cx="366" cy="134" r="6" fill="#22c55e"/>
+  <circle cx="366" cy="134" r="11" fill="#22c55e" opacity="0.3"/>
+  <!-- Auto-focus / Low-light Sensor -->
+  <circle cx="234" cy="134" r="5" fill="#f43f5e" opacity="0.8"/>
 </svg>

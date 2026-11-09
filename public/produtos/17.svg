@@ -1,19 +1,62 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#e0e7ff"/>
+      <stop offset="50%" stop-color="#cffafe"/>
+      <stop offset="100%" stop-color="#d1fae5"/>
+    </linearGradient>
+    <linearGradient id="case" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="bumper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#06b6d4" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#06b6d4" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#06b6d4" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#06b6d4" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#06b6d4" text-anchor="middle">PROZ #17</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzVault 2TB</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">HD Externo Portatil AES-256</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="485" cy="95" r="130" fill="#38bdf8" opacity="0.2"/>
+  <circle cx="115" cy="300" r="140" fill="#34d399" opacity="0.2"/>
+  <ellipse cx="290" cy="348" rx="145" ry="16" fill="#0f172a" opacity="0.18"/>
+  <!-- USB 3.2 High-Speed Cable & Connector -->
+  <path d="M275,320 L275,342 C275,365 435,365 435,280 L435,175" fill="none" stroke="#1e293b" stroke-width="10" stroke-linecap="round"/>
+  <path d="M275,320 L275,342 C275,365 435,365 435,280 L435,175" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-dasharray="8 6" stroke-linecap="round"/>
+  <!-- USB-A / USB-C Adapter Plug -->
+  <rect x="417" y="135" width="36" height="44" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+  <rect x="424" y="113" width="22" height="22" rx="2" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+  <rect x="428" y="120" width="5" height="6" fill="#0284c7"/>
+  <rect x="437" y="120" width="5" height="6" fill="#0284c7"/>
+  <!-- Shock-Resistant Silicone Outer Bumper -->
+  <rect x="172" y="54" width="206" height="272" rx="30" fill="url(#bumper)" stroke="#0369a1" stroke-width="3"/>
+  <!-- Rugged Grip Notches on Sides -->
+  <g fill="#0369a1">
+    <rect x="166" y="95" width="8" height="24" rx="4"/>
+    <rect x="166" y="135" width="8" height="24" rx="4"/>
+    <rect x="166" y="175" width="8" height="24" rx="4"/>
+    <rect x="166" y="215" width="8" height="24" rx="4"/>
+    <rect x="166" y="255" width="8" height="24" rx="4"/>
+    <rect x="376" y="95" width="8" height="24" rx="4"/>
+    <rect x="376" y="135" width="8" height="24" rx="4"/>
+    <rect x="376" y="175" width="8" height="24" rx="4"/>
+    <rect x="376" y="215" width="8" height="24" rx="4"/>
+    <rect x="376" y="255" width="8" height="24" rx="4"/>
+  </g>
+  <!-- Brushed Enclosure Inner Shell -->
+  <rect x="186" y="68" width="178" height="244" rx="20" fill="url(#case)" stroke="#64748b" stroke-width="2"/>
+  <!-- Textured Diagonal Carbon / Vault Lines -->
+  <g stroke="#334155" stroke-width="2" opacity="0.65">
+    <line x1="196" y1="100" x2="354" y2="100"/>
+    <line x1="196" y1="116" x2="354" y2="116"/>
+    <line x1="196" y1="264" x2="354" y2="264"/>
+    <line x1="196" y1="280" x2="354" y2="280"/>
+  </g>
+  <!-- AES-256 Encryption Padlock Emblem in Center -->
+  <circle cx="275" cy="190" r="46" fill="#090d16" stroke="#38bdf8" stroke-width="2.5"/>
+  <path d="M261,182 L261,168 C261,158 289,158 289,168 L289,182" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+  <rect x="253" y="180" width="44" height="34" rx="7" fill="#0ea5e9"/>
+  <circle cx="275" cy="194" r="4.5" fill="#090d16"/>
+  <line x1="275" y1="198" x2="275" y2="206" stroke="#090d16" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Activity LED Strip -->
+  <rect x="250" y="82" width="50" height="6" rx="3" fill="#22c55e"/>
 </svg>

@@ -95,7 +95,7 @@ docker compose logs platform
 
 > **Importante:**
 > - Os schemas Prisma (`platform.prisma` e `shop.prisma`) utilizam **PostgreSQL**. O **Docker Desktop** (ou Docker Engine) precisa estar **ligado** no PC para subir os dois bancos locais (`platform-db` em `127.0.0.1:5433` e `shop-db` em `127.0.0.1:5434`).
-> - O ambiente de **produção / sala de aula (notebook Debian)** continua utilizando exclusivamente `docker-compose.yml` e `./reset.sh` (Seção 2).
+> - O desenvolvimento no PC utiliza `prisma db push --skip-generate` para sincronizar os dois schemas diretamente nos bancos locais (pois as pastas `prisma/platform-migrations` e `prisma/shop-migrations` são separadas no repositório), enquanto a **produção (Docker / notebook Debian)** continua utilizando `prisma migrate deploy` com migrations versionadas (copiadas pelos `Dockerfile`s para `prisma/migrations` de cada container) via `docker-compose.yml` e `./reset.sh` (Seção 2).
 
 ### Passo 1 — Gerar `.env` e `.env.local` (com URLs apontando para `127.0.0.1:5433` e `127.0.0.1:5434`)
 No terminal (Git Bash / WSL / Linux / macOS):
@@ -107,7 +107,7 @@ No terminal (Git Bash / WSL / Linux / macOS):
 - `./gerar-env.sh` cria o `.env` com segredos aleatórios (`PLATFORM_DB_PASSWORD`, `SHOP_DB_PASSWORD`, `PLATFORM_SESSION_SECRET`, `CTF_FLAG_SECRET`).
 - `./gerar-env.sh --dev` gera o `.env.local` (ignorado pelo Git) com `DATABASE_URL_PLATFORM` (`127.0.0.1:5433`) e `DATABASE_URL_SHOP` (`127.0.0.1:5434`) usando as mesmas senhas do `.env`.
 
-### Passo 2 — Subir os bancos de desenvolvimento, aplicar migrations/seed e iniciar o Next.js
+### Passo 2 — Subir os bancos de desenvolvimento, aplicar `db push`/seed e iniciar o Next.js
 ```bash
 npm install
 npm run dev:db
@@ -117,7 +117,7 @@ npm run dev
 
 O que cada script faz:
 - **`npm run dev:db`**: Sobe os 2 bancos PostgreSQL do `docker-compose.dev.yml` (publicados apenas em `127.0.0.1:5433` e `127.0.0.1:5434`) e aguarda ambos ficarem `healthy` (`--wait`).
-- **`npm run dev:setup`**: Gera os clientes Prisma, executa `prisma migrate deploy` nos dois bancos e roda o `seed` inicial (salvando o gabarito em `FLAGS_REAIS.txt`).
+- **`npm run dev:setup`**: Gera os clientes Prisma, sincroniza as tabelas nos dois bancos via `prisma db push --skip-generate` e roda o `seed` inicial (salvando o gabarito em `FLAGS_REAIS.txt`). *(Em produção/Docker no notebook, o entrypoint continua usando `prisma migrate deploy`).*
 - **`npm run dev`**: Inicia o servidor Next.js em `http://localhost:3000` (Plataforma em `/ctf` e Loja em `/loja`).
 - **`npm run dev:reset`**: Derruba os volumes de desenvolvimento (`down -v`), sobe novamente os bancos limpos e reexecuta o `dev:setup`.
 - **`npm run dev:down`**: Para os containers de banco de dados do ambiente de desenvolvimento.

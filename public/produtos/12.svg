@@ -1,19 +1,69 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="50%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#f3e8ff"/>
+    </linearGradient>
+    <linearGradient id="shroud" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="rtx" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#a855f7"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#10b981" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#10b981" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#10b981" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#10b981" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">PROZ #12</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzForce RTX 4060</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Placa de Video 8GB GDDR6</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="490" cy="95" r="130" fill="#4ade80" opacity="0.2"/>
+  <circle cx="120" cy="300" r="140" fill="#c084fc" opacity="0.2"/>
+  <ellipse cx="310" cy="335" rx="225" ry="18" fill="#0f172a" opacity="0.2"/>
+  <!-- Stainless Steel PCIe Dual-Slot I/O Bracket (Left) -->
+  <path d="M62,78 L88,78 L88,318 L72,318 L72,92 L62,92 Z" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+  <rect x="76" y="125" width="8" height="26" rx="2" fill="#1e293b"/>
+  <rect x="76" y="165" width="8" height="26" rx="2" fill="#1e293b"/>
+  <rect x="76" y="205" width="8" height="26" rx="2" fill="#1e293b"/>
+  <!-- Bottom PCIe 4.0 x16 Gold Finger Connector -->
+  <rect x="145" y="286" width="230" height="22" rx="3" fill="#1e293b"/>
+  <rect x="150" y="292" width="38" height="14" rx="1" fill="#f59e0b"/>
+  <rect x="196" y="292" width="174" height="14" rx="1" fill="#f59e0b"/>
+  <!-- Exposed Aluminum Fin Heatsink Top Edge -->
+  <rect x="96" y="96" width="424" height="14" rx="3" fill="#64748b"/>
+  <!-- Main GPU Dual-Fan Shroud -->
+  <polygon points="88,106 525,106 540,124 540,272 525,290 88,290" fill="url(#shroud)" stroke="#64748b" stroke-width="2.5"/>
+  <!-- Angular RGB Accent Stripes on Shroud -->
+  <polyline points="115,120 295,120 315,136 510,136" fill="none" stroke="url(#rtx)" stroke-width="4" stroke-linecap="round"/>
+  <polyline points="115,276 295,276 315,260 510,260" fill="none" stroke="url(#rtx)" stroke-width="4" stroke-linecap="round"/>
+  <!-- Left Cooling Fan (95mm) -->
+  <circle cx="212" cy="198" r="72" fill="#090d16" stroke="#475569" stroke-width="3"/>
+  <circle cx="212" cy="198" r="66" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="16 8"/>
+  <g stroke="#334155" stroke-width="8" stroke-linecap="round">
+    <line x1="212" y1="134" x2="225" y2="198"/>
+    <line x1="212" y1="262" x2="199" y2="198"/>
+    <line x1="148" y1="198" x2="212" y2="185"/>
+    <line x1="276" y1="198" x2="212" y2="211"/>
+    <line x1="167" y1="153" x2="212" y2="198"/>
+    <line x1="257" y1="243" x2="212" y2="198"/>
+    <line x1="257" y1="153" x2="212" y2="198"/>
+    <line x1="167" y1="243" x2="212" y2="198"/>
+  </g>
+  <circle cx="212" cy="198" r="22" fill="#1e293b" stroke="#22c55e" stroke-width="2.5"/>
+  <circle cx="212" cy="198" r="7" fill="#22c55e"/>
+  <!-- Right Cooling Fan (95mm) -->
+  <circle cx="412" cy="198" r="72" fill="#090d16" stroke="#475569" stroke-width="3"/>
+  <circle cx="412" cy="198" r="66" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="16 8"/>
+  <g stroke="#334155" stroke-width="8" stroke-linecap="round">
+    <line x1="412" y1="134" x2="425" y2="198"/>
+    <line x1="412" y1="262" x2="399" y2="198"/>
+    <line x1="348" y1="198" x2="412" y2="185"/>
+    <line x1="476" y1="198" x2="412" y2="211"/>
+    <line x1="367" y1="153" x2="412" y2="198"/>
+    <line x1="457" y1="243" x2="412" y2="198"/>
+    <line x1="457" y1="153" x2="412" y2="198"/>
+    <line x1="367" y1="243" x2="412" y2="198"/>
+  </g>
+  <circle cx="412" cy="198" r="22" fill="#1e293b" stroke="#06b6d4" stroke-width="2.5"/>
+  <circle cx="412" cy="198" r="7" fill="#06b6d4"/>
 </svg>

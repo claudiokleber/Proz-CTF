@@ -1,19 +1,54 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="50%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="alu" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="50%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#06b6d4" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#06b6d4" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#06b6d4" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#06b6d4" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#06b6d4" text-anchor="middle">PROZ #09</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzDock 8-em-1</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Hub USB-C 4K HDMI · PD 100W</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="485" cy="100" r="125" fill="#38bdf8" opacity="0.18"/>
+  <circle cx="115" cy="300" r="140" fill="#60a5fa" opacity="0.18"/>
+  <ellipse cx="325" cy="295" rx="200" ry="18" fill="#0f172a" opacity="0.18"/>
+  <!-- Integrated Flexible USB-C Cable & Plug -->
+  <path d="M150,210 L95,210 C55,210 55,130 95,130 L175,130" fill="none" stroke="#1e293b" stroke-width="14" stroke-linecap="round"/>
+  <path d="M150,210 L95,210 C55,210 55,130 95,130 L175,130" fill="none" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+  <!-- USB-C Male Connector Shell -->
+  <rect x="170" y="112" width="52" height="36" rx="8" fill="#334155" stroke="#64748b" stroke-width="2"/>
+  <rect x="222" y="121" width="22" height="18" rx="4" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/>
+  <line x1="196" y1="124" x2="196" y2="136" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <!-- Anodized Aluminum Hub Body -->
+  <rect x="145" y="165" width="380" height="110" rx="22" fill="url(#alu)" stroke="#94a3b8" stroke-width="2.5"/>
+  <!-- Recessed Dark Port Panel -->
+  <rect x="163" y="183" width="344" height="74" rx="12" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+  <!-- Power LED Indicator -->
+  <circle cx="182" cy="220" r="5" fill="#38bdf8"/>
+  <circle cx="182" cy="220" r="10" fill="#38bdf8" opacity="0.25"/>
+  <!-- USB-C 100W PD Port -->
+  <rect x="202" y="212" width="28" height="16" rx="8" fill="#020617" stroke="#f97316" stroke-width="2"/>
+  <rect x="208" y="218" width="16" height="4" rx="2" fill="#f97316"/>
+  <!-- HDMI 4K Port -->
+  <polygon points="244,208 286,208 286,224 279,232 251,232 244,224" fill="#020617" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="252" y="217" width="26" height="4" fill="#eab308"/>
+  <!-- 3x USB 3.0 Ports (Blue tongue) -->
+  <g>
+    <rect x="300" y="206" width="34" height="28" rx="3" fill="#020617" stroke="#94a3b8" stroke-width="2"/>
+    <rect x="305" y="211" width="24" height="7" fill="#0284c7"/>
+    <rect x="344" y="206" width="34" height="28" rx="3" fill="#020617" stroke="#94a3b8" stroke-width="2"/>
+    <rect x="349" y="211" width="24" height="7" fill="#0284c7"/>
+    <rect x="388" y="206" width="34" height="28" rx="3" fill="#020617" stroke="#94a3b8" stroke-width="2"/>
+    <rect x="393" y="211" width="24" height="7" fill="#0284c7"/>
+  </g>
+  <!-- SD & MicroSD Card Slots -->
+  <rect x="434" y="208" width="36" height="8" rx="2" fill="#020617" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="440" y="224" width="24" height="7" rx="2" fill="#020617" stroke="#64748b" stroke-width="1.5"/>
+  <!-- Gigabit RJ45 Ethernet Port on Right Edge -->
+  <rect x="480" y="198" width="18" height="44" rx="3" fill="#020617" stroke="#94a3b8" stroke-width="1.5"/>
+  <circle cx="489" cy="204" r="2.5" fill="#22c55e"/>
+  <circle cx="489" cy="236" r="2.5" fill="#f59e0b"/>
 </svg>

@@ -1,19 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#ffedd5"/>
+      <stop offset="50%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="pack" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="55%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#8b5cf6" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#8b5cf6" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#8b5cf6" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#8b5cf6" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#8b5cf6" text-anchor="middle">PROZ #18</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzPack 17</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Mochila Antifurto Impermeavel</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="485" cy="95" r="130" fill="#38bdf8" opacity="0.2"/>
+  <circle cx="115" cy="300" r="140" fill="#fb923c" opacity="0.18"/>
+  <ellipse cx="300" cy="364" rx="145" ry="15" fill="#0f172a" opacity="0.2"/>
+  <!-- Water-Repellent Droplets Floating Around -->
+  <g fill="#0ea5e9" opacity="0.7">
+    <path d="M135,120 C135,120 145,134 145,140 A10,10 0 1,1 125,140 C125,134 135,120 135,120 Z"/>
+    <path d="M110,185 C110,185 117,195 117,200 A7,7 0 1,1 103,200 C103,195 110,185 110,185 Z"/>
+    <path d="M465,110 C465,110 475,124 475,130 A10,10 0 1,1 455,130 C455,124 465,110 465,110 Z"/>
+    <path d="M485,175 C485,175 492,185 492,190 A7,7 0 1,1 478,190 C478,185 485,175 485,175 Z"/>
+  </g>
+  <!-- Top Reinforced Carry Handle -->
+  <path d="M262,65 C262,36 338,36 338,65" fill="none" stroke="#1e293b" stroke-width="12" stroke-linecap="round"/>
+  <path d="M272,46 L328,46" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+  <!-- Padded Shoulder Straps Visible Behind Sides -->
+  <path d="M210,115 C165,135 162,255 198,315" fill="none" stroke="#0f172a" stroke-width="20" stroke-linecap="round"/>
+  <path d="M390,115 C435,135 438,255 402,315" fill="none" stroke="#0f172a" stroke-width="20" stroke-linecap="round"/>
+  <!-- External USB Charging Port on Right Side -->
+  <rect x="404" y="235" width="22" height="38" rx="6" fill="#090d16" stroke="#f97316" stroke-width="2"/>
+  <rect x="412" y="246" width="6" height="16" rx="2" fill="#38bdf8"/>
+  <!-- Main Anti-Theft Hardshell Backpack Body -->
+  <path d="M215,62 L385,62 C405,62 415,110 415,210 L412,320 C412,344 392,354 365,354 L235,354 C208,354 188,344 188,320 L185,210 C185,110 195,62 215,62 Z" fill="url(#pack)" stroke="#64748b" stroke-width="2.5"/>
+  <!-- Geometric Cut-Resistant Front Armor Panel -->
+  <polygon points="222,95 378,95 394,185 372,326 228,326 206,185" fill="url(#panel)" stroke="#475569" stroke-width="2"/>
+  <!-- Hidden Seam Contour & Reflective Night Strips -->
+  <polyline points="206,185 255,210 345,210 394,185" fill="none" stroke="#0f172a" stroke-width="5" stroke-linejoin="round"/>
+  <line x1="255" y1="224" x2="345" y2="224" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+  <line x1="242" y1="298" x2="358" y2="298" stroke="#f97316" stroke-width="4" stroke-linecap="round"/>
+  <!-- Subtle Shield Badge at Top Center -->
+  <polygon points="300,122 316,129 312,150 300,158 288,150 284,129" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
 </svg>

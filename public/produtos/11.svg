@@ -1,19 +1,65 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#ffe4e6"/>
+      <stop offset="50%" stop-color="#ffedd5"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+    <linearGradient id="mic" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="grille" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#ec4899" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#ec4899" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#ec4899" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#ec4899" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#ec4899" text-anchor="middle">PROZ #11</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzCast USB</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Microfone Condensador 24-bit</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="480" cy="100" r="130" fill="#fb7185" opacity="0.18"/>
+  <circle cx="120" cy="300" r="140" fill="#fbbf24" opacity="0.22"/>
+  <ellipse cx="300" cy="362" rx="115" ry="14" fill="#0f172a" opacity="0.18"/>
+  <!-- Studio Audio Waveform Bars (Left & Right) -->
+  <g fill="#f43f5e" opacity="0.65">
+    <rect x="115" y="140" width="8" height="40" rx="4"/>
+    <rect x="133" y="115" width="8" height="90" rx="4"/>
+    <rect x="151" y="130" width="8" height="60" rx="4"/>
+    <rect x="169" y="100" width="8" height="120" rx="4"/>
+    <rect x="423" y="100" width="8" height="120" rx="4"/>
+    <rect x="441" y="130" width="8" height="60" rx="4"/>
+    <rect x="459" y="115" width="8" height="90" rx="4"/>
+    <rect x="477" y="140" width="8" height="40" rx="4"/>
+  </g>
+  <!-- Articulated Boom Arm Hint & Heavy Desk Stand -->
+  <ellipse cx="300" cy="354" rx="88" ry="16" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+  <rect x="288" y="300" width="24" height="54" rx="4" fill="#334155"/>
+  <!-- U-Shaped Yoke Mount -->
+  <path d="M222,195 L222,272 C222,306 378,306 378,272 L378,195" fill="none" stroke="#475569" stroke-width="12" stroke-linecap="round"/>
+  <!-- Thumbscrews -->
+  <circle cx="222" cy="205" r="10" fill="#0f172a" stroke="#94a3b8" stroke-width="2"/>
+  <circle cx="378" cy="205" r="10" fill="#0f172a" stroke="#94a3b8" stroke-width="2"/>
+  <!-- Condenser Capsule Mesh Head -->
+  <rect x="252" y="62" width="96" height="118" rx="48" fill="url(#grille)" stroke="#64748b" stroke-width="3"/>
+  <!-- Inner RGB / Gold Condenser Glow -->
+  <ellipse cx="300" cy="112" rx="28" ry="36" fill="#f43f5e" opacity="0.45"/>
+  <!-- Mesh Pattern Lines -->
+  <g stroke="#0f172a" stroke-width="2" opacity="0.65">
+    <line x1="256" y1="90" x2="344" y2="90"/>
+    <line x1="253" y1="106" x2="347" y2="106"/>
+    <line x1="253" y1="122" x2="347" y2="122"/>
+    <line x1="255" y1="138" x2="345" y2="138"/>
+    <line x1="280" y1="65" x2="280" y2="155"/>
+    <line x1="300" y1="62" x2="300" y2="155"/>
+    <line x1="320" y1="65" x2="320" y2="155"/>
+  </g>
+  <!-- Chrome Ring Separator -->
+  <rect x="248" y="148" width="104" height="10" rx="3" fill="#94a3b8"/>
+  <!-- Lower Microphone Body Cylinder -->
+  <path d="M252,158 L348,158 L348,242 C348,268 252,268 252,242 Z" fill="url(#mic)" stroke="#475569" stroke-width="2"/>
+  <!-- Touch Mute Button with LED Ring -->
+  <circle cx="300" cy="192" r="16" fill="#0f172a" stroke="#22c55e" stroke-width="3"/>
+  <circle cx="300" cy="192" r="6" fill="#22c55e"/>
+  <!-- Gain Dial Knob -->
+  <circle cx="300" cy="232" r="12" fill="#334155" stroke="#94a3b8" stroke-width="2"/>
+  <line x1="300" y1="222" x2="300" y2="230" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"/>
 </svg>

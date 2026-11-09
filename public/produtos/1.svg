@@ -1,19 +1,62 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="50%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#c7d2fe"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+    <linearGradient id="lid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#f59e0b" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#f59e0b" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#f59e0b" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#f59e0b" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#f59e0b" text-anchor="middle">PROZ #01</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzBook Ultra 15</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Notebook DDR5 · NVMe 512GB</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="490" cy="90" r="130" fill="#ffffff" opacity="0.45"/>
+  <circle cx="110" cy="310" r="150" fill="#818cf8" opacity="0.2"/>
+  <ellipse cx="300" cy="340" rx="220" ry="18" fill="#1e293b" opacity="0.18"/>
+  <!-- Lid / Screen frame -->
+  <rect x="140" y="75" width="320" height="210" rx="14" fill="url(#lid)" stroke="#475569" stroke-width="3"/>
+  <!-- Camera notch -->
+  <rect x="275" y="78" width="50" height="8" rx="4" fill="#020617"/>
+  <circle cx="300" cy="82" r="2.5" fill="#38bdf8"/>
+  <!-- Display -->
+  <rect x="154" y="90" width="292" height="178" rx="6" fill="url(#screen)"/>
+  <!-- Abstract UI / Wallpaper on screen -->
+  <circle cx="380" cy="155" r="55" fill="#f43f5e" opacity="0.35"/>
+  <circle cx="240" cy="200" r="70" fill="#38bdf8" opacity="0.35"/>
+  <rect x="175" y="112" width="130" height="85" rx="8" fill="#0f172a" opacity="0.65"/>
+  <rect x="187" y="126" width="55" height="6" rx="3" fill="#38bdf8"/>
+  <rect x="187" y="140" width="90" height="6" rx="3" fill="#a78bfa"/>
+  <rect x="187" y="154" width="75" height="6" rx="3" fill="#34d399"/>
+  <rect x="187" y="168" width="40" height="6" rx="3" fill="#fbbf24"/>
+  <!-- Dock bar -->
+  <rect x="235" y="246" width="130" height="12" rx="6" fill="#ffffff" opacity="0.35"/>
+  <circle cx="255" cy="252" r="3.5" fill="#ffffff"/>
+  <circle cx="273" cy="252" r="3.5" fill="#38bdf8"/>
+  <circle cx="291" cy="252" r="3.5" fill="#fbbf24"/>
+  <circle cx="309" cy="252" r="3.5" fill="#34d399"/>
+  <circle cx="327" cy="252" r="3.5" fill="#f43f5e"/>
+  <circle cx="345" cy="252" r="3.5" fill="#a855f7"/>
+  <!-- Screen glare -->
+  <polygon points="154,90 280,90 190,268 154,268" fill="#ffffff" opacity="0.12"/>
+  <!-- Hinge -->
+  <rect x="240" y="283" width="120" height="6" rx="2" fill="#1e293b"/>
+  <!-- Keyboard base (perspective trapezoid) -->
+  <polygon points="135,288 465,288 510,322 90,322" fill="url(#body)" stroke="#64748b" stroke-width="1.5"/>
+  <!-- Keyboard well -->
+  <polygon points="155,293 445,293 468,310 132,310" fill="#1e293b"/>
+  <!-- Trackpad -->
+  <polygon points="265,312 335,312 342,320 258,320" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>
+  <!-- Front lip of notebook -->
+  <path d="M90,322 L510,322 C510,330 498,334 485,334 L115,334 C102,334 90,330 90,322 Z" fill="#64748b"/>
+  <rect x="265" y="322" width="70" height="5" rx="2.5" fill="#334155"/>
 </svg>

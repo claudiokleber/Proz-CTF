@@ -1,19 +1,74 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="50%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="tower" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#f59e0b" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#f59e0b" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#f59e0b" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#f59e0b" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#f59e0b" text-anchor="middle">PROZ #14</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzPower 1500VA</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">Nobreak Senoidal Puro LCD</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="480" cy="100" r="130" fill="#38bdf8" opacity="0.18"/>
+  <circle cx="120" cy="300" r="140" fill="#fbbf24" opacity="0.22"/>
+  <ellipse cx="300" cy="358" rx="175" ry="16" fill="#0f172a" opacity="0.2"/>
+  <!-- 3D Side Body of UPS Tower (Right Panel with 6 Protected Outlets & Vents) -->
+  <polygon points="310,60 445,88 445,332 310,350" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+  <!-- Side Ventilation Louvers -->
+  <g stroke="#0f172a" stroke-width="3" stroke-linecap="round">
+    <line x1="330" y1="100" x2="425" y2="116"/>
+    <line x1="330" y1="114" x2="425" y2="130"/>
+    <line x1="330" y1="128" x2="425" y2="144"/>
+  </g>
+  <!-- 6 Protected NBR Outlets (2x3 Grid on Side Panel) -->
+  <g fill="#090d16" stroke="#475569" stroke-width="1.5">
+    <polygon points="335,170 375,176 375,206 335,200"/>
+    <polygon points="388,178 428,184 428,214 388,208"/>
+    <polygon points="335,216 375,222 375,252 335,246"/>
+    <polygon points="388,224 428,230 428,260 388,254"/>
+    <polygon points="335,262 375,268 375,298 335,292"/>
+    <polygon points="388,270 428,276 428,306 388,300"/>
+  </g>
+  <!-- Outlet Pin Holes -->
+  <g fill="#64748b">
+    <circle cx="347" cy="186" r="2"/><circle cx="355" cy="183" r="2"/><circle cx="363" cy="189" r="2"/>
+    <circle cx="400" cy="194" r="2"/><circle cx="408" cy="191" r="2"/><circle cx="416" cy="197" r="2"/>
+    <circle cx="347" cy="232" r="2"/><circle cx="355" cy="229" r="2"/><circle cx="363" cy="235" r="2"/>
+    <circle cx="400" cy="240" r="2"/><circle cx="408" cy="237" r="2"/><circle cx="416" cy="243" r="2"/>
+    <circle cx="347" cy="278" r="2"/><circle cx="355" cy="275" r="2"/><circle cx="363" cy="281" r="2"/>
+    <circle cx="400" cy="286" r="2"/><circle cx="408" cy="283" r="2"/><circle cx="416" cy="289" r="2"/>
+  </g>
+  <!-- Front Bezel of UPS Tower -->
+  <rect x="160" y="60" width="155" height="290" rx="12" fill="url(#tower)" stroke="#64748b" stroke-width="2.5"/>
+  <!-- Glowing Power Button -->
+  <circle cx="237" cy="96" r="16" fill="#090d16" stroke="#22c55e" stroke-width="3"/>
+  <path d="M231,91 A9,9 0 1,0 243,91" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="237" y1="86" x2="237" y2="96" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Smart LCD Display Panel -->
+  <rect x="180" y="128" width="115" height="120" rx="8" fill="url(#lcd)" stroke="#38bdf8" stroke-width="2"/>
+  <!-- Pure Sine Wave Graphic on LCD -->
+  <path d="M192,162 Q206,136 220,162 T248,162 T276,162" fill="none" stroke="#fde047" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Battery Charge Bars on LCD -->
+  <rect x="194" y="190" width="86" height="22" rx="4" fill="none" stroke="#e0f2fe" stroke-width="2"/>
+  <rect x="280" y="196" width="5" height="10" rx="1" fill="#e0f2fe"/>
+  <rect x="199" y="195" width="16" height="12" rx="1.5" fill="#4ade80"/>
+  <rect x="219" y="195" width="16" height="12" rx="1.5" fill="#4ade80"/>
+  <rect x="239" y="195" width="16" height="12" rx="1.5" fill="#4ade80"/>
+  <rect x="259" y="195" width="16" height="12" rx="1.5" fill="#4ade80"/>
+  <!-- Status Indicators & USB Management Port -->
+  <rect x="194" y="224" width="36" height="8" rx="4" fill="#38bdf8"/>
+  <rect x="238" y="224" width="42" height="8" rx="4" fill="#bae6fd"/>
+  <!-- USB Monitoring Port & Front Vents -->
+  <rect x="225" y="268" width="24" height="12" rx="3" fill="#090d16" stroke="#38bdf8" stroke-width="1.5"/>
+  <g stroke="#090d16" stroke-width="4" stroke-linecap="round">
+    <line x1="185" y1="298" x2="290" y2="298"/>
+    <line x1="185" y1="312" x2="290" y2="312"/>
+    <line x1="185" y1="326" x2="290" y2="326"/>
+  </g>
 </svg>

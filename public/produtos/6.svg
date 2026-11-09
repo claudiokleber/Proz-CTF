@@ -1,19 +1,70 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#020617"/>
-      <stop offset="50%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e1b4b"/>
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="50%" stop-color="#ffedd5"/>
+      <stop offset="100%" stop-color="#fee2e2"/>
+    </linearGradient>
+    <linearGradient id="pcb" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="heatsink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
     </linearGradient>
   </defs>
   <rect width="600" height="400" fill="url(#bg)"/>
-  <circle cx="500" cy="80" r="140" fill="#f59e0b" opacity="0.12"/>
-  <circle cx="100" cy="340" r="160" fill="#f59e0b" opacity="0.08"/>
-  <rect x="40" y="40" width="520" height="320" rx="20" fill="#0f172a" fill-opacity="0.75" stroke="#f59e0b" stroke-opacity="0.35" stroke-width="2"/>
-  <rect x="70" y="75" width="96" height="28" rx="14" fill="#f59e0b" fill-opacity="0.18"/>
-  <text x="118" y="94" font-family="monospace" font-size="13" font-weight="bold" fill="#f59e0b" text-anchor="middle">PROZ #06</text>
-  <text x="70" y="195" font-family="system-ui, sans-serif" font-size="30" font-weight="800" fill="#f8fafc">ProzSpeed 1TB</text>
-  <text x="70" y="232" font-family="system-ui, sans-serif" font-size="17" fill="#94a3b8">SSD NVMe PCIe 4.0 · 7000MB/s</text>
-  <line x1="70" y1="275" x2="530" y2="275" stroke="#1e293b" stroke-width="2"/>
-  <text x="70" y="312" font-family="monospace" font-size="13" fill="#64748b">PROZ STORE · HARDWARE &amp; SEGURANCA · 100% OFFLINE</text>
+  <circle cx="490" cy="95" r="130" fill="#fbbf24" opacity="0.22"/>
+  <circle cx="120" cy="310" r="140" fill="#f87171" opacity="0.18"/>
+  <!-- Speed lines in background -->
+  <line x1="60" y1="115" x2="190" y2="115" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+  <line x1="410" y1="295" x2="540" y2="295" stroke="#ef4444" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+  <line x1="90" y1="280" x2="170" y2="280" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+  <!-- Drop shadow -->
+  <ellipse cx="300" cy="285" rx="230" ry="18" fill="#0f172a" opacity="0.18"/>
+  <!-- M.2 NVMe Base PCB -->
+  <path d="M75,140 L505,140 C515,140 522,147 522,157 L522,185 A18,18 0 0,0 522,221 L522,249 C522,259 515,266 505,266 L75,266 Z" fill="url(#pcb)" stroke="#475569" stroke-width="2"/>
+  <!-- M.2 Gold Contact Pins (Left Connector) -->
+  <rect x="55" y="148" width="24" height="72" rx="3" fill="#1e293b"/>
+  <rect x="55" y="228" width="24" height="30" rx="3" fill="#1e293b"/>
+  <g fill="url(#gold)">
+    <rect x="55" y="153" width="22" height="5" rx="1"/>
+    <rect x="55" y="162" width="22" height="5" rx="1"/>
+    <rect x="55" y="171" width="22" height="5" rx="1"/>
+    <rect x="55" y="180" width="22" height="5" rx="1"/>
+    <rect x="55" y="189" width="22" height="5" rx="1"/>
+    <rect x="55" y="198" width="22" height="5" rx="1"/>
+    <rect x="55" y="207" width="22" height="5" rx="1"/>
+    <rect x="55" y="232" width="22" height="5" rx="1"/>
+    <rect x="55" y="241" width="22" height="5" rx="1"/>
+    <rect x="55" y="250" width="22" height="5" rx="1"/>
+  </g>
+  <!-- Mounting Screw Semicircle (Right) -->
+  <path d="M522,182 A21,21 0 0,0 522,224" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <!-- Exposed Controller Chip & Capacitors near connector -->
+  <rect x="92" y="162" width="54" height="54" rx="4" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="102" y="172" width="34" height="34" rx="2" fill="#0f172a"/>
+  <rect x="96" y="226" width="14" height="8" rx="1" fill="url(#gold)"/>
+  <rect x="116" y="226" width="14" height="8" rx="1" fill="url(#gold)"/>
+  <rect x="96" y="240" width="14" height="8" rx="1" fill="url(#gold)"/>
+  <rect x="116" y="240" width="14" height="8" rx="1" fill="url(#gold)"/>
+  <!-- Graphene Thermal Heatsink Plate -->
+  <polygon points="160,134 485,134 498,147 498,259 485,272 160,272 148,259 148,147" fill="url(#heatsink)" stroke="#64748b" stroke-width="2"/>
+  <!-- Heatsink Cooling Fins & Red/Gold Accents -->
+  <polygon points="168,148 475,148 462,162 180,162" fill="#0f172a"/>
+  <polygon points="168,258 475,258 462,244 180,244" fill="#0f172a"/>
+  <line x1="175" y1="174" x2="470" y2="174" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+  <line x1="175" y1="232" x2="470" y2="232" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+  <!-- Center Heatsink Geometric Core -->
+  <polygon points="205,186 440,186 452,203 440,220 205,220 193,203" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+  <!-- Speed Chevron Arrows -->
+  <polyline points="295,193 308,203 295,213" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="315,193 328,203 315,213" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="335,193 348,203 335,213" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
